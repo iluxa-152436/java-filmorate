@@ -36,12 +36,9 @@ public class UserController {
         }
     }
 
-    @PutMapping("/{userId}")
-    public User updateUser(@PathVariable("userId") int userId, @Valid @RequestBody User user) {
+    @PutMapping
+    public User updateUser(@Valid @RequestBody User user) {
         try {
-            if (userId != user.getId()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка user id");
-            }
             return userService.updateUser(user);
         } catch (ValidateUserException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

@@ -36,12 +36,9 @@ public class FilmController {
         }
     }
 
-    @PutMapping("/{filmId}")
-    public Film updateFilm(@PathVariable("filmId") Integer filmId, @Valid @RequestBody Film film) {
+    @PutMapping
+    public Film updateFilm(@Valid @RequestBody Film film) {
         try {
-            if (filmId != film.getId()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка film id");
-            }
             return filmService.updateFilm(film);
         } catch (ValidateFilmException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

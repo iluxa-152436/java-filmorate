@@ -111,7 +111,7 @@ class UserControllerTest {
                 "updated",
                 "updated",
                 LocalDate.of(1989, 4, 13)));
-        User updatedUser = restTemplate.exchange("http://localhost:" + port + "/users/" + user.getId(),
+        User updatedUser = restTemplate.exchange("http://localhost:" + port + "/users",
                 HttpMethod.PUT,
                 request,
                 User.class).getBody();

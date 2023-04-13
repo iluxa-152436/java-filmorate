@@ -180,7 +180,7 @@ class FilmControllerTest {
                 "update",
                 LocalDate.now(),
                 30));
-        Film updatedFilm = restTemplate.exchange("http://localhost:" + port + "/films/" + film.getId(),
+        Film updatedFilm = restTemplate.exchange("http://localhost:" + port + "/films/",
                 HttpMethod.PUT,
                 request,
                 Film.class).getBody();
