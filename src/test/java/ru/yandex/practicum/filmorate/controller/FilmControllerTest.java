@@ -14,6 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
+import ru.yandex.practicum.filmorate.exception.ValidateFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -22,8 +23,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
@@ -39,11 +38,7 @@ class FilmControllerTest {
 
     @Test
     void createFilm() {
-        HttpEntity<Film> request = new HttpEntity<>(new Film(1,
-                "name",
-                "description",
-                LocalDate.now(),
-                30));
+        HttpEntity<Film> request = new HttpEntity<>(getFilmObj());
         Film film = restTemplate.postForObject("http://localhost:" + port + "/films", request, Film.class);
         Assertions.assertNotNull(film);
         assertEquals(1, film.getId());
@@ -152,13 +147,9 @@ class FilmControllerTest {
     }
 
     @Test
-    void getFilms() {
-        Film film = new Film(1,
-                "name",
-                "description",
-                LocalDate.now(),
-                30);
-        filmService.setFilms(Map.of(1, film));
+    void getFilms() throws ValidateFilmException {
+        Film film = getFilmObj();
+        filmService.createFilm(film);
         ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:" + port + "/films",
                 Film[].class);
         Film[] films = response.getBody();
@@ -167,14 +158,17 @@ class FilmControllerTest {
         assertEquals(film, films[0]);
     }
 
-    @Test
-    void updateFilm() {
-        Film film = new Film(1,
+    private static Film getFilmObj() {
+        return new Film(1,
                 "name",
                 "description",
                 LocalDate.now(),
                 30);
-        filmService.setFilms(new HashMap<>(Map.of(1, film)));
+    }
+
+    @Test
+    void updateFilm() throws ValidateFilmException {
+        filmService.createFilm(getFilmObj());
         HttpEntity<Film> request = new HttpEntity<>(new Film(1,
                 "update",
                 "update",

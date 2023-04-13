@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import ru.yandex.practicum.filmorate.exception.FindUserException;
 import ru.yandex.practicum.filmorate.exception.ValidateUserException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -14,11 +13,9 @@ import java.util.Map;
 
 @Slf4j
 @Service
-@Getter
-@Setter
 public class UserService {
     private Map<Integer, User> users;
-    int id;
+    private int id;
 
     public UserService() {
         id = 0;
@@ -44,7 +41,7 @@ public class UserService {
     }
 
     private void checkName(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
+        if (StringUtils.isBlank(user.getName())) {
             user.setName(user.getLogin());
         }
     }

@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
+import ru.yandex.practicum.filmorate.exception.ValidateUserException;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -19,9 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
@@ -99,13 +97,9 @@ class UserControllerTest {
     }
 
     @Test
-    void updateUser() {
-        User user = new User(1,
-                "abc@abc.ru",
-                "login",
-                "name",
-                LocalDate.of(1989, 4, 13));
-        userService.setUsers(new HashMap<>(Map.of(1, user)));
+    void updateUser() throws ValidateUserException {
+        User user = getUser();
+        userService.createUser(user);
         HttpEntity<User> request = new HttpEntity<>(new User(user.getId(),
                 "updated@abc.ru",
                 "updated",
@@ -121,6 +115,14 @@ class UserControllerTest {
         assertEquals("updated@abc.ru", updatedUser.getEmail());
         assertEquals("updated", updatedUser.getLogin());
         assertEquals("1989-04-13", updatedUser.getBirthday().toString());
+    }
+
+    private static User getUser() {
+        return new User(1,
+                "abc@abc.ru",
+                "login",
+                "name",
+                LocalDate.of(1989, 4, 13));
     }
 
     @Test
@@ -189,13 +191,9 @@ class UserControllerTest {
     }
 
     @Test
-    void getUsers() {
-        User user = new User(1,
-                "abc@abc.ru",
-                "login",
-                "name name",
-                LocalDate.now());
-        userService.setUsers(Map.of(1, user));
+    void getUsers() throws ValidateUserException {
+        User user = getUser();
+        userService.createUser(user);
         ResponseEntity<User[]> response = restTemplate.getForEntity("http://localhost:" + port + "/users",
                 User[].class);
         User[] users = response.getBody();

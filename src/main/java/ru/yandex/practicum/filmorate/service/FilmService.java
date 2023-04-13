@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FindFilmException;
@@ -16,11 +14,9 @@ import static ru.yandex.practicum.filmorate.Constants.*;
 
 @Slf4j
 @Service
-@Getter
-@Setter
 public class FilmService {
     private Map<Integer, Film> films;
-    int id;
+    private int id;
 
     public FilmService() {
         id = 0;
