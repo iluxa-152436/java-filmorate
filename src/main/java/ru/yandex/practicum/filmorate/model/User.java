@@ -13,12 +13,12 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class User {
     private int id;
-    @NotBlank(message = "Email cannot be empty")
-    @Email(message = "Email should be valid")
+    @NotBlank(message = "email cannot be empty")
+    @Email(message = "email should be valid")
     private String email;
-    @NotBlank(message = "Login cannot be empty")
+    @NotBlank(message = "login cannot be empty")
     private String login;
     private String name;
-    @PastOrPresent
+    @PastOrPresent(message = "birthday should be in past or present")
     private LocalDate birthday;
 }

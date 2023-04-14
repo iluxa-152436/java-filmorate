@@ -21,7 +21,7 @@ public class Film {
     @Size(max = MAX_FILM_DESCRIPTION_LENGTH,
             message = "description should not be greater than " + MAX_FILM_DESCRIPTION_LENGTH)
     private String description;
-    @NotNull
+    @NotNull(message = "releaseDate cannot be empty")
     private LocalDate releaseDate;
     @Positive(message = "duration should be greater than 0")
     private int duration;

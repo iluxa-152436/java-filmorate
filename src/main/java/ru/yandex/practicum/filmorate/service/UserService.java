@@ -26,7 +26,7 @@ public class UserService {
         return users.values();
     }
 
-    public User createUser(User user) throws ValidateUserException {
+    public User createUser(User user) {
         user.setId(++id);
         checkName(user);
         checkLogin(user);
@@ -34,7 +34,7 @@ public class UserService {
         return user;
     }
 
-    private void checkLogin(User user) throws ValidateUserException {
+    private void checkLogin(User user) {
         if (user.getLogin().contains(" ")) {
             throw new ValidateUserException("Name не должен содержать пробелы");
         }
@@ -46,7 +46,7 @@ public class UserService {
         }
     }
 
-    public User updateUser(User user) throws ValidateUserException, FindUserException {
+    public User updateUser(User user) {
         checkId(user);
         checkName(user);
         checkLogin(user);
@@ -54,7 +54,7 @@ public class UserService {
         return user;
     }
 
-    private void checkId(User user) throws FindUserException {
+    private void checkId(User user) {
         if (!users.containsKey(user.getId())) {
             throw new FindUserException("Пользователь с id: " + user.getId() + " не найден");
         }
