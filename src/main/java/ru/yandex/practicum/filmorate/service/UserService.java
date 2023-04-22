@@ -2,35 +2,37 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.exception.FindUserException;
 import ru.yandex.practicum.filmorate.exception.ValidateUserException;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Service
 public class UserService {
-    private Map<Integer, User> users;
-    private int id;
 
-    public UserService() {
+    private int id;
+    private final UserStorage storage;
+
+    @Autowired
+    public UserService(UserStorage storage) {
         id = 0;
-        users = new HashMap<>();
+        this.storage = storage;
     }
 
     public Collection<User> getUsers() {
-        return users.values();
+        return storage.getUsers();
     }
 
     public User createUser(User user) {
         user.setId(++id);
         checkName(user);
         checkLogin(user);
-        users.put(user.getId(), user);
+        storage.createUser(user);
         return user;
     }
 
@@ -50,12 +52,12 @@ public class UserService {
         checkId(user);
         checkName(user);
         checkLogin(user);
-        users.put(user.getId(), user);
+        storage.updateUser(user);
         return user;
     }
 
     private void checkId(User user) {
-        if (!users.containsKey(user.getId())) {
+        if (!storage.containsUser(user.getId())) {
             throw new FindUserException("Пользователь с id: " + user.getId() + " не найден");
         }
     }
