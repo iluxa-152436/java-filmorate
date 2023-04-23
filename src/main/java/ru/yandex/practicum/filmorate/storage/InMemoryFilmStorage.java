@@ -15,6 +15,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public InMemoryFilmStorage(Map<Integer, Film> films) {
         this.films = films;
     }
+
     @Override
     public void createFilm(Film film) {
         films.put(film.getId(), film);
