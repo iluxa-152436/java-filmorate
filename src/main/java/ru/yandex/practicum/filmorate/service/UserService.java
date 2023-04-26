@@ -72,7 +72,7 @@ public class UserService {
         }
     }
 
-    private void checkId(int userId) {
+    protected void checkId(int userId) {
         if (!userStorage.containsUser(userId)) {
             throw new FindUserException("Пользователь с id: " + userId + " не найден");
         }

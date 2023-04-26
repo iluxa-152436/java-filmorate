@@ -18,9 +18,9 @@ public class InMemoryFriendStorage implements FriendStorage {
 
     @Override
     public void addFriend(int userId, int friendId) {
-        Set<Integer> setFriends = friends.getOrDefault(userId, new HashSet<>());
-        setFriends.add(friendId);
-        friends.put(userId, setFriends);
+        Set<Integer> friendsSet = friends.getOrDefault(userId, new HashSet<>());
+        friendsSet.add(friendId);
+        friends.put(userId, friendsSet);
     }
 
     @Override

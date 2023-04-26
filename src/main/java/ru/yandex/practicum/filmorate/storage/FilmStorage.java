@@ -8,5 +8,6 @@ public interface FilmStorage {
     void createFilm(Film film);
     void updateFilm(Film film);
     Collection<Film> getFilms();
-    boolean containsFilm(int id);
+    boolean containsFilm(int filmId);
+    Film getFilm(int filmId);
 }

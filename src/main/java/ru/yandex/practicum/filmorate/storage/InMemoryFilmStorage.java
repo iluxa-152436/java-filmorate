@@ -4,15 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films;
 
     @Autowired
-    public InMemoryFilmStorage(Map<Integer, Film> films) {
+    public InMemoryFilmStorage(HashMap<Integer, Film> films) {
         this.films = films;
     }
 
@@ -32,7 +31,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public boolean containsFilm(int id) {
-        return films.containsKey(id);
+    public boolean containsFilm(int filmId) {
+        return films.containsKey(filmId);
+    }
+
+    @Override
+    public Film getFilm(int filmId) {
+        return films.get(filmId);
     }
 }

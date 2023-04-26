@@ -23,9 +23,10 @@ public class FilmService {
         this.storage = storage;
         id = 0;
     }
+
     public Film createFilm(Film film) {
-        film.setId(++id);
         checkReleaseDate(film);
+        film.setId(++id);
         storage.createFilm(film);
         return film;
     }
@@ -43,6 +44,12 @@ public class FilmService {
         }
     }
 
+    protected void checkId(int flmId) {
+        if (!storage.containsFilm(flmId)) {
+            throw new FindFilmException("Фильм с id: " + flmId + " не найден");
+        }
+    }
+
     private void checkReleaseDate(Film film) {
         if (film.getReleaseDate().isBefore(FIRST_RELEASE_DATE)) {
             throw new ValidateFilmException("Дата релиза не может быть ранее " + FIRST_RELEASE_DATE);
@@ -51,5 +58,10 @@ public class FilmService {
 
     public Collection<Film> getFilms() {
         return storage.getFilms();
+    }
+
+    public Film getFilm(int filmId) {
+        checkId(filmId);
+        return storage.getFilm(filmId);
     }
 }
