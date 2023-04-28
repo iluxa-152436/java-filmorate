@@ -19,8 +19,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
-
+import ru.yandex.practicum.filmorate.service.LikeService;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 
@@ -35,6 +37,12 @@ class FilmControllerTest {
 
     @Autowired
     private FilmService filmService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private LikeService likeService;
 
     @Test
     void createFilm() {
@@ -185,5 +193,61 @@ class FilmControllerTest {
         assertEquals("update", updatedFilm.getDescription());
         assertEquals(LocalDate.now(), updatedFilm.getReleaseDate());
         assertEquals(30, updatedFilm.getDuration());
+    }
+
+    @Test
+    void addLike() {
+        Film film = getFilmObj();
+        filmService.createFilm(film);
+        User user = getUser();
+        userService.createUser(user);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/films/1/like/1",
+                HttpMethod.PUT,
+                null,
+                String.class);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    void deleteLike() {
+        Film film = getFilmObj();
+        filmService.createFilm(film);
+        User user = getUser();
+        userService.createUser(user);
+        likeService.addLike(1, 1);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/films/1/like/1",
+                HttpMethod.DELETE,
+                null,
+                String.class);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    void getPopularFilms() {
+        Film film1 = getFilmObj();
+        filmService.createFilm(film1);
+        Film film2 = getFilmObj();
+        filmService.createFilm(film2);
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+        likeService.addLike(1, 1);
+        likeService.addLike(2, 1);
+        likeService.addLike(1, 2);
+        ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:" + port + "/films/popular",
+                Film[].class);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        Film[] films = response.getBody();
+        assertEquals(2, films.length);
+        assertEquals(1, films[0].getId());
+    }
+
+    private static User getUser() {
+        return new User(1,
+                "abc@abc.ru",
+                "login",
+                "name",
+                LocalDate.of(1989, 4, 13));
     }
 }
