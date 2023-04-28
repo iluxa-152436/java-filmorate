@@ -27,8 +27,8 @@ public class InMemoryLikeStorage implements LikeStorage {
     }
 
     @Override
-    public List<Like> getSortedLikes(Comparator comparator, long limit) {
-        return (ArrayList<Like>) likes.values().stream()
+    public List<Like> getSortedLikes(Comparator<Like> comparator, long limit) {
+        return likes.values().stream()
                 .sorted(comparator)
                 .limit(limit)
                 .collect(Collectors.toList());

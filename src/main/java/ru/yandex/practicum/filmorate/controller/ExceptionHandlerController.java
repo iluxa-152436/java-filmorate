@@ -11,6 +11,8 @@ import ru.yandex.practicum.filmorate.exception.ValidateFilmException;
 import ru.yandex.practicum.filmorate.exception.ValidateUserException;
 import ru.yandex.practicum.filmorate.model.ApiErrorMessage;
 
+import javax.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 public class ExceptionHandlerController {
     @ExceptionHandler(value = {FindFilmException.class, FindUserException.class})
@@ -27,10 +29,17 @@ public class ExceptionHandlerController {
                 .body(new ApiErrorMessage(exception.getMessage()));
     }
 
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, ConstraintViolationException.class})
     public ResponseEntity<ApiErrorMessage> handleArgumentNotValidException(MethodArgumentNotValidException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiErrorMessage(exception.getFieldError().getDefaultMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiErrorMessage> handleThrowable(final Throwable exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiErrorMessage("Произошла непредвиденная ошибка."));
     }
 }

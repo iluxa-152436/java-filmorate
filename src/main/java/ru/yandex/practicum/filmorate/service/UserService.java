@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -24,7 +24,7 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    public Collection<User> getUsers() {
+    public List<User> getUsers() {
         return userStorage.getAllUsers();
     }
 
@@ -33,14 +33,13 @@ public class UserService {
         return userStorage.getUser(userId);
     }
 
-    public Collection<User> getUsers(Set<Integer> userIds) {
+    public List<User> getUsers(Set<Integer> userIds) {
         return userStorage.getUsers(userIds);
     }
 
     public User createUser(User user) {
         user.setId(++id);
         checkName(user);
-        checkLogin(user);
         userStorage.createUser(user);
         return user;
     }

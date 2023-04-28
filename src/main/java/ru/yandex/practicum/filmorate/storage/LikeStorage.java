@@ -8,7 +8,7 @@ import java.util.List;
 public interface LikeStorage {
     void saveLike(Like like);
 
-    List<Like> getSortedLikes(Comparator comparator, long limit);
+    List<Like> getSortedLikes(Comparator<Like> comparator, long limit);
 
     Like getLike(int filmId);
 }

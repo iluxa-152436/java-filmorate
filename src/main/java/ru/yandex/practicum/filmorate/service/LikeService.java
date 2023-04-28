@@ -32,12 +32,12 @@ public class LikeService {
         if (like == null) {
             Set<Integer> userIds = new HashSet<>();
             userIds.add(userId);
-            like = new Like(filmId, userIds, 1);
+            like = new Like(filmId, userIds);
             likeStorage.saveLike(like);
         } else if (!like.getUserIds().contains(userId)) {
             Set<Integer> newUserIds = like.getUserIds();
             newUserIds.add(userId);
-            Like newLike = new Like(filmId, newUserIds, like.getLikeCount() + 1);
+            Like newLike = new Like(filmId, newUserIds);
             likeStorage.saveLike(newLike);
         }
     }
@@ -47,7 +47,6 @@ public class LikeService {
         userService.checkId(userId);
         Like like = likeStorage.getLike(filmId);
         if (like != null && like.getUserIds().contains(userId)) {
-            like.setLikeCount(like.getLikeCount() - 1);
             like.getUserIds().remove(userId);
         }
     }
@@ -63,7 +62,7 @@ public class LikeService {
 
     public void addFilmToList(int filmId) {
         filmService.checkId(filmId);
-        Like like = new Like(filmId, new HashSet<>(), 0);
+        Like like = new Like(filmId, new HashSet<>());
         likeStorage.saveLike(like);
     }
 }
