@@ -26,7 +26,6 @@ public class LikeService {
     }
 
     public void addLike(int filmId, int userId) {
-        //TODO переделать красиво
         filmService.checkId(filmId);
         userService.checkId(userId);
         Like like = likeStorage.getLike(filmId);
