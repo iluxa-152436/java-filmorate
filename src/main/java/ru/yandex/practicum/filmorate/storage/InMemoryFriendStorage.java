@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Repository
 public class InMemoryFriendStorage implements FriendStorage {
-    Map<Integer, Set<Integer>> friends;
+    private final Map<Integer, Set<Integer>> friends;
 
     @Autowired
     public InMemoryFriendStorage(Map<Integer, Set<Integer>> friends) {

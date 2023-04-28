@@ -1,20 +1,20 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.Collection;
-import java.util.Optional;
-
-import static ru.yandex.practicum.filmorate.Constants.DEFAULT_COUNT_LIST;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@Validated
 public class FilmController {
     private final FilmService filmService;
     private final LikeService likeService;
@@ -57,7 +57,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopularFilms(@RequestParam Optional<Long> count) {
-        return likeService.getSortedFilms(count.orElse(DEFAULT_COUNT_LIST));
+    public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive long count) {
+        return likeService.getSortedFilms(count);
     }
 }

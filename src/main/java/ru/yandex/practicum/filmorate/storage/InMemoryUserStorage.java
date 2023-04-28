@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -29,12 +27,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> getAllUsers() {
-        return users.values();
+    public List<User> getAllUsers() {
+        return List.copyOf(users.values());
     }
 
     @Override
-    public Collection<User> getUsers(Set<Integer> userIds) {
+    public List<User> getUsers(Set<Integer> userIds) {
         return userIds.stream()
                 .map(users::get)
                 .collect(Collectors.toList());
