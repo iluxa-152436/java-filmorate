@@ -34,11 +34,9 @@ public class LikeService {
             userIds.add(userId);
             like = new Like(filmId, userIds);
             likeStorage.saveLike(like);
-        } else if (!like.getUserIds().contains(userId)) {
+        } else {
             Set<Integer> newUserIds = like.getUserIds();
             newUserIds.add(userId);
-            Like newLike = new Like(filmId, newUserIds);
-            likeStorage.saveLike(newLike);
         }
     }
 
@@ -46,7 +44,7 @@ public class LikeService {
         filmService.checkId(filmId);
         userService.checkId(userId);
         Like like = likeStorage.getLike(filmId);
-        if (like != null && like.getUserIds().contains(userId)) {
+        if (like != null) {
             like.getUserIds().remove(userId);
         }
     }
