@@ -223,6 +223,17 @@ class FilmControllerTest {
     }
 
     @Test
+    void deleteLikeNegative() {
+        User user = getUser();
+        userService.createUser(user);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/films/1/like/1",
+                HttpMethod.DELETE,
+                null,
+                String.class);
+        assertEquals(404, response.getStatusCodeValue());
+    }
+
+    @Test
     void getPopularFilms() {
         Film film1 = getFilmObj();
         filmService.createFilm(film1);
