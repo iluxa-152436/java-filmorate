@@ -39,9 +39,9 @@ public class FilmService {
         }
     }
 
-    protected void checkId(int flmId) {
-        if (!storage.containsFilm(flmId)) {
-            throw new FindFilmException("Фильм с id: " + flmId + " не найден");
+    protected void checkId(int filmId) {
+        if (!storage.containsFilm(filmId)) {
+            throw new FindFilmException("Фильм с id: " + filmId + " не найден");
         }
     }
 
