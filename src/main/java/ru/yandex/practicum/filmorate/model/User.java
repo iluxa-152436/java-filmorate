@@ -2,9 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -17,8 +15,11 @@ public class User {
     @Email(message = "email should be valid")
     private String email;
     @NotBlank(message = "login cannot be empty")
+    @Pattern(regexp = "^[a-zA-Z0-9]{1,20}$",
+            message = "login must not contain any special characters or spaces")
     private String login;
     private String name;
+    @NotNull
     @PastOrPresent(message = "birthday should be in past or present")
     private LocalDate birthday;
 }
