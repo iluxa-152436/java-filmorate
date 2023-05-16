@@ -17,6 +17,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import ru.yandex.practicum.filmorate.service.FriendService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
@@ -31,6 +32,8 @@ class UserControllerTest {
     private TestRestTemplate restTemplate;
     @Autowired
     private UserService userService;
+    @Autowired
+    private FriendService friendService;
 
     @Test
     void createUser() {
@@ -191,7 +194,7 @@ class UserControllerTest {
     }
 
     @Test
-    void getUsers() throws ValidateUserException {
+    void getUsers() {
         User user = getUser();
         userService.createUser(user);
         ResponseEntity<User[]> response = restTemplate.getForEntity("http://localhost:" + port + "/users",
@@ -200,5 +203,71 @@ class UserControllerTest {
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(users);
         assertEquals(user, users[0]);
+    }
+
+    @Test
+    void addFriend() {
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/users/1/friends/2",
+                HttpMethod.PUT,
+                null,
+                String.class);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, friendService.getFriends(1).size());
+        assertEquals(1, friendService.getFriends(2).size());
+    }
+
+    @Test
+    void deleteFriend() {
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+        friendService.addFriend(1, 2);
+        assertEquals(1, friendService.getFriends(1).size());
+        assertEquals(1, friendService.getFriends(2).size());
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/users/1/friends/2",
+                HttpMethod.DELETE,
+                null,
+                String.class);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(0, friendService.getFriends(1).size());
+        assertEquals(0, friendService.getFriends(2).size());
+    }
+
+    @Test
+    void getFriends() {
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+        friendService.addFriend(1, 2);
+        ResponseEntity<User[]> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1/friends",
+                User[].class);
+        User[] users = response.getBody();
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, users[0].getId());
+    }
+
+    @Test
+    void getCommonFriends() {
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+        User user3 = getUser();
+        userService.createUser(user3);
+        friendService.addFriend(1, 2);
+        friendService.addFriend(2, 3);
+        ResponseEntity<User[]> response = restTemplate.getForEntity("http://localhost:"
+                        + port
+                        + "/users/1/friends/common/3",
+                User[].class);
+        User[] users = response.getBody();
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, users[0].getId());
     }
 }

@@ -2,35 +2,45 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.exception.FindUserException;
 import ru.yandex.practicum.filmorate.exception.ValidateUserException;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
 public class UserService {
-    private Map<Integer, User> users;
     private int id;
+    private final UserStorage userStorage;
 
-    public UserService() {
+    @Autowired
+    public UserService(UserStorage userStorage) {
         id = 0;
-        users = new HashMap<>();
+        this.userStorage = userStorage;
     }
 
-    public Collection<User> getUsers() {
-        return users.values();
+    public List<User> getUsers() {
+        return userStorage.getAllUsers();
+    }
+
+    public User getUser(int userId) {
+        checkId(userId);
+        return userStorage.getUser(userId);
+    }
+
+    public List<User> getUsers(Set<Integer> userIds) {
+        return userStorage.getUsers(userIds);
     }
 
     public User createUser(User user) {
         user.setId(++id);
         checkName(user);
-        checkLogin(user);
-        users.put(user.getId(), user);
+        userStorage.createUser(user);
         return user;
     }
 
@@ -50,13 +60,19 @@ public class UserService {
         checkId(user);
         checkName(user);
         checkLogin(user);
-        users.put(user.getId(), user);
+        userStorage.updateUser(user);
         return user;
     }
 
     private void checkId(User user) {
-        if (!users.containsKey(user.getId())) {
+        if (!userStorage.containsUser(user.getId())) {
             throw new FindUserException("Пользователь с id: " + user.getId() + " не найден");
+        }
+    }
+
+    protected void checkId(int userId) {
+        if (!userStorage.containsUser(userId)) {
+            throw new FindUserException("Пользователь с id: " + userId + " не найден");
         }
     }
 }
