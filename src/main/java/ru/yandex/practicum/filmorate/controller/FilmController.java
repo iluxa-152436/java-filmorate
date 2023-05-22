@@ -6,10 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
+import ru.yandex.practicum.filmorate.service.MpaRatingService;
+import ru.yandex.practicum.filmorate.storage.MpaRatingStorage;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -25,7 +27,7 @@ public class FilmController {
     }
 
     @GetMapping
-    public Collection<Film> getFilms() {
+    public List<Film> getFilms() {
         return filmService.getFilms();
     }
 
@@ -57,7 +59,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive long count) {
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive long count) {
         return likeService.getSortedFilms(count);
     }
 }

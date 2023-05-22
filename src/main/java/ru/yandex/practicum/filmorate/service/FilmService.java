@@ -2,33 +2,60 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FindFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
 public class FilmService {
-    private int id;
     private final FilmStorage storage;
+    private final GenreService genreService;
+    private final MpaRatingService mpaRatingService;
 
     @Autowired
-    public FilmService(FilmStorage storage) {
+    public FilmService(@Qualifier("dbFilmStorage") FilmStorage storage, GenreService genreService, MpaRatingService mpaRatingService) {
         this.storage = storage;
-        id = 0;
+        this.genreService = genreService;
+        this.mpaRatingService = mpaRatingService;
     }
 
     public Film createFilm(Film film) {
-        film.setId(++id);
-        storage.createFilm(film);
+        film.setId(storage.getNextId());
+        fillInMpaRating(film);
+        fillInGenres(film);
+        storage.saveFilm(film);
         return film;
+    }
+
+    private void fillInGenres(Film film) {
+        if (film.getGenres() != null) {
+            Set<Genre> genres = new HashSet<>();
+            for (Genre genre : film.getGenres()) {
+                genres.add(genreService.getGenre(genre.getId()));
+            }
+            film.setGenres(genres);
+        }
+    }
+
+    private void fillInMpaRating(Film film) {
+        if (film.getMpa() != null) {
+            film.setMpa(mpaRatingService.getMpaRating(film.getMpa().getId()));
+        }
     }
 
     public Film updateFilm(Film film) {
         checkId(film);
+        fillInMpaRating(film);
+        fillInGenres(film);
         storage.updateFilm(film);
         return film;
     }
@@ -45,7 +72,7 @@ public class FilmService {
         }
     }
 
-    public Collection<Film> getFilms() {
+    public List<Film> getFilms() {
         return storage.getFilms();
     }
 

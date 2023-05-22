@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserStorage {
-    void createUser(User user);
+    void saveUser(User user);
 
     void updateUser(User user);
 
@@ -17,4 +17,6 @@ public interface UserStorage {
     User getUser(int userId);
 
     boolean containsUser(int userId);
+
+    int getNexId();
 }

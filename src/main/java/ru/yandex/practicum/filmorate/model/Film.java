@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
+import ru.yandex.practicum.filmorate.validator.MpaRatingConstraint;
 import ru.yandex.practicum.filmorate.validator.ReleaseDateConstraint;
 
 import javax.validation.constraints.NotBlank;
@@ -8,6 +9,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 import static ru.yandex.practicum.filmorate.Constants.MAX_FILM_DESCRIPTION_LENGTH;
 
@@ -28,4 +31,6 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "duration should be greater than 0")
     private int duration;
+    private Set<Genre> genres;
+    private MpaRating mpa;
 }

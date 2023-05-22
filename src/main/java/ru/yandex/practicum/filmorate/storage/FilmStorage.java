@@ -5,7 +5,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.List;
 
 public interface FilmStorage {
-    void createFilm(Film film);
+    void saveFilm(Film film);
 
     void updateFilm(Film film);
 
@@ -14,4 +14,6 @@ public interface FilmStorage {
     boolean containsFilm(int filmId);
 
     Film getFilm(int filmId);
+
+    int getNextId();
 }

@@ -1,22 +1,26 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
 
 @Repository
+@Qualifier("inMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
+    private int id;
     private final Map<Integer, Film> films;
 
     @Autowired
     public InMemoryFilmStorage(HashMap<Integer, Film> films) {
         this.films = films;
+        id = 0;
     }
 
     @Override
-    public void createFilm(Film film) {
+    public void saveFilm(Film film) {
         films.put(film.getId(), film);
     }
 
@@ -38,5 +42,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilm(int filmId) {
         return films.get(filmId);
+    }
+
+    @Override
+    public int getNextId() {
+        return ++id;
     }
 }

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.yandex.practicum.filmorate.exception.FindUserException;
 import ru.yandex.practicum.filmorate.exception.ValidateUserException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -15,12 +16,10 @@ import java.util.Set;
 @Slf4j
 @Service
 public class UserService {
-    private int id;
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
-        id = 0;
+    public UserService(@Qualifier("dbUserStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -38,9 +37,9 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        user.setId(++id);
+        user.setId(userStorage.getNexId());
         checkName(user);
-        userStorage.createUser(user);
+        userStorage.saveUser(user);
         return user;
     }
 
