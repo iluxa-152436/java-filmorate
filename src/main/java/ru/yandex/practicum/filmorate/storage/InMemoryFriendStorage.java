@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Repository
-@Qualifier("inMemoryFriendStorage")
+@Qualifier("InMemory")
 public class InMemoryFriendStorage implements FriendStorage {
     private final Map<Integer, Set<Integer>> friends;
 

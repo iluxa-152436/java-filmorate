@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-@Qualifier("inMemoryUserStorage")
+@Qualifier("InMemory")
 public class InMemoryUserStorage implements UserStorage {
     private int id;
     private final Map<Integer, User> users;

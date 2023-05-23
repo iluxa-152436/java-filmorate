@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Qualifier("dbMpaRatingStorage")
+@Qualifier("DB")
 public class DbMpaRatingStorage implements MpaRatingStorage {
     private final JdbcTemplate jdbcTemplate;
 

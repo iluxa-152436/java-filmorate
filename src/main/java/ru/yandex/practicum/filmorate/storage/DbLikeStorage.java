@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Repository
-@Qualifier("dbLikeStorage")
+@Qualifier("DB")
 public class DbLikeStorage implements LikeStorage {
     private final JdbcTemplate jdbcTemplate;
 

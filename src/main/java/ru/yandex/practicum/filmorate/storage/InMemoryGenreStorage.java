@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-@Qualifier("inMemoryGenreStorage")
+@Qualifier("InMemory")
 public class InMemoryGenreStorage implements GenreStorage {
     private final Map<Integer, Genre> genres;
     private int id;

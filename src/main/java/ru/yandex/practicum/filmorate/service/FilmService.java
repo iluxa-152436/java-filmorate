@@ -21,7 +21,7 @@ public class FilmService {
     private final MpaRatingService mpaRatingService;
 
     @Autowired
-    public FilmService(@Qualifier("dbFilmStorage") FilmStorage storage, GenreService genreService, MpaRatingService mpaRatingService) {
+    public FilmService(@Qualifier("DB") FilmStorage storage, GenreService genreService, MpaRatingService mpaRatingService) {
         this.storage = storage;
         this.genreService = genreService;
         this.mpaRatingService = mpaRatingService;

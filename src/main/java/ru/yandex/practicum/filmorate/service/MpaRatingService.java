@@ -16,7 +16,7 @@ public class MpaRatingService {
     private final MpaRatingStorage storage;
 
     @Autowired
-    public MpaRatingService(@Qualifier("dbMpaRatingStorage") MpaRatingStorage storage) {
+    public MpaRatingService(@Qualifier("DB") MpaRatingStorage storage) {
         this.storage = storage;
     }
 
@@ -25,6 +25,6 @@ public class MpaRatingService {
     }
 
     public MpaRating getMpaRating(int mpaRatingId) {
-        return storage.getMpaRating(mpaRatingId).orElseThrow(()-> new FindMpaRatingException("Рейтинг с id: " + mpaRatingId + " не найден"));
+        return storage.getMpaRating(mpaRatingId).orElseThrow(() -> new FindMpaRatingException("Рейтинг с id: " + mpaRatingId + " не найден"));
     }
 }

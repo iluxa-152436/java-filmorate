@@ -18,7 +18,7 @@ public class LikeService {
     private final UserService userService;
 
     @Autowired
-    public LikeService(@Qualifier("dbLikeStorage") LikeStorage likeStorage, FilmService filmService, UserService userService) {
+    public LikeService(@Qualifier("DB") LikeStorage likeStorage, FilmService filmService, UserService userService) {
         this.likeStorage = likeStorage;
         this.filmService = filmService;
         this.userService = userService;

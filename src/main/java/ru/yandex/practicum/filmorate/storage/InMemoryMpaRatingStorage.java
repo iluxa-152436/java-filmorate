@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-@Qualifier("inMemoryMpaRatingStorage")
+@Qualifier("InMemory")
 public class InMemoryMpaRatingStorage implements MpaRatingStorage {
     private final Map<Integer, MpaRating> mpaRatings;
     private int id;

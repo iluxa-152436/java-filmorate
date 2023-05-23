@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-@Qualifier("dbUserStorage")
+@Qualifier("DB")
 public class DbUserStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;

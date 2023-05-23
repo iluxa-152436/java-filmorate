@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Qualifier("dbGenreStorage")
-public class DbGenreStorage implements GenreStorage{
+@Qualifier("DB")
+public class DbGenreStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired

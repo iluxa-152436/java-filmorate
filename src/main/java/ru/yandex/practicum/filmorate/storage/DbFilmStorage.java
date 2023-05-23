@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Repository
-@Qualifier("dbFilmStorage")
+@Qualifier("DB")
 public class DbFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 

@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Repository
-@Qualifier("dbFriendStorage")
+@Qualifier("DB")
 public class DbFriendStorage implements FriendStorage{
     private final JdbcTemplate jdbcTemplate;
 

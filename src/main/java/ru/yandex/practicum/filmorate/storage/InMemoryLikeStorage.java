@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-@Qualifier("inMemoryLikeStorage")
+@Qualifier("InMemory")
 public class InMemoryLikeStorage implements LikeStorage {
     private final Map<Integer, Set<Like>> userLikes;
     private final Map<Integer, Integer> filmLikes;

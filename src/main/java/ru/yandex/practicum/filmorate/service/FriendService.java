@@ -19,7 +19,7 @@ public class FriendService {
     private final FriendStorage friendStorage;
 
     @Autowired
-    public FriendService(UserService userService, @Qualifier("dbFriendStorage") FriendStorage friendStorage) {
+    public FriendService(UserService userService, @Qualifier("DB") FriendStorage friendStorage) {
         this.userService = userService;
         this.friendStorage = friendStorage;
     }

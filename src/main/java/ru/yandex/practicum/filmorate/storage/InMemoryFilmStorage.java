@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.*;
 
 @Repository
-@Qualifier("inMemoryFilmStorage")
+@Qualifier("InMemory")
 public class InMemoryFilmStorage implements FilmStorage {
     private int id;
     private final Map<Integer, Film> films;
