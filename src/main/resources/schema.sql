@@ -44,7 +44,6 @@ film_id)
 CREATE TABLE IF NOT EXISTS friends (
 user_id INTEGER REFERENCES app_users (user_id),
 friend_id INTEGER REFERENCES app_users (user_id),
-is_accepted BOOLEAN,
 CONSTRAINT pk_friends PRIMARY KEY (
 user_id,
 friend_id)
