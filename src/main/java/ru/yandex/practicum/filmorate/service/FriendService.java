@@ -28,7 +28,6 @@ public class FriendService {
         userService.checkId(userId);
         userService.checkId(friendId);
         friendStorage.addFriend(userId, friendId);
-        //friendStorage.addFriend(friendId, userId);
     }
 
     public void deleteFriend(int userId, int friendId) {
