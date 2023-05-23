@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +32,7 @@ public class FilmService {
         fillInMpaRating(film);
         fillInGenres(film);
         storage.saveFilm(film);
-        return film;
+        return storage.getFilm(film.getId());
     }
 
     private void fillInGenres(Film film) {
@@ -57,7 +56,7 @@ public class FilmService {
         fillInMpaRating(film);
         fillInGenres(film);
         storage.updateFilm(film);
-        return film;
+        return storage.getFilm(film.getId());
     }
 
     private void checkId(Film film) {

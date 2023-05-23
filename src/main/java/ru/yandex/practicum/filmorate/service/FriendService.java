@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FriendStorage;
@@ -18,7 +19,7 @@ public class FriendService {
     private final FriendStorage friendStorage;
 
     @Autowired
-    public FriendService(UserService userService, FriendStorage friendStorage) {
+    public FriendService(UserService userService, @Qualifier("dbFriendStorage") FriendStorage friendStorage) {
         this.userService = userService;
         this.friendStorage = friendStorage;
     }
@@ -27,7 +28,7 @@ public class FriendService {
         userService.checkId(userId);
         userService.checkId(friendId);
         friendStorage.addFriend(userId, friendId);
-        friendStorage.addFriend(friendId, userId);
+        //friendStorage.addFriend(friendId, userId);
     }
 
     public void deleteFriend(int userId, int friendId) {

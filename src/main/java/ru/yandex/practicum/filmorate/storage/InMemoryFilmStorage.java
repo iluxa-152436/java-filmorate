@@ -13,15 +13,19 @@ public class InMemoryFilmStorage implements FilmStorage {
     private int id;
     private final Map<Integer, Film> films;
 
+    private final InMemoryLikeStorage likeStorage;
+
     @Autowired
-    public InMemoryFilmStorage(HashMap<Integer, Film> films) {
+    public InMemoryFilmStorage(HashMap<Integer, Film> films, InMemoryLikeStorage likeStorage) {
         this.films = films;
+        this.likeStorage = likeStorage;
         id = 0;
     }
 
     @Override
     public void saveFilm(Film film) {
         films.put(film.getId(), film);
+        likeStorage.addFilmToLikeList(film.getId());
     }
 
     @Override

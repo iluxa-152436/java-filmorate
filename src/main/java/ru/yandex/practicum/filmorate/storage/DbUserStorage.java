@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.storage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -17,10 +19,12 @@ import java.util.Set;
 @Qualifier("dbUserStorage")
 public class DbUserStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    public DbUserStorage(JdbcTemplate jdbcTemplate) {
+    public DbUserStorage(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     @Override
@@ -53,16 +57,10 @@ public class DbUserStorage implements UserStorage {
 
     @Override
     public List<User> getUsers(Set<Integer> userIds) {
-        StringBuilder ids = new StringBuilder();
-        for (Integer userId : userIds) {
-            ids.append(userId);
-            if (userIds.iterator().hasNext()) {
-                ids.append(",");
-            }
-        }
-        return jdbcTemplate.query("select * from app_users where user_id in (?)",
-                (rs, rowNum) -> makeUser(rs),
-                ids);
+        SqlParameterSource parameters = new MapSqlParameterSource("ids", userIds);
+        return namedParameterJdbcTemplate.query("select * from app_users where user_id in (:ids)",
+                parameters,
+                (rs, rowNum) -> makeUser(rs));
     }
 
     @Override
@@ -74,8 +72,8 @@ public class DbUserStorage implements UserStorage {
 
     @Override
     public boolean containsUser(int userId) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select count(*) from app_users where user_id=?", userId);
-        return userRows.next();
+        Integer count = jdbcTemplate.queryForObject("select count(*) from app_users where user_id=?", Integer.class, userId);
+        return count == 1;
     }
 
     @Override

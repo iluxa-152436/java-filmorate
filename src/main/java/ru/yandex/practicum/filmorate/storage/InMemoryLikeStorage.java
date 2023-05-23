@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Like;
 
@@ -8,29 +9,41 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
+@Qualifier("inMemoryLikeStorage")
 public class InMemoryLikeStorage implements LikeStorage {
-    private final Map<Integer, Like> likes;
+    private final Map<Integer, Set<Like>> userLikes;
+    private final Map<Integer, Integer> filmLikes;
 
     @Autowired
-    public InMemoryLikeStorage(Map<Integer, Like> likes) {
-        this.likes = likes;
+    public InMemoryLikeStorage(HashMap<Integer, Set<Like>> userLikes, Map<Integer, Integer> filmLikes) {
+        this.userLikes = userLikes;
+        this.filmLikes = filmLikes;
     }
 
     @Override
     public void saveLike(Like like) {
-        likes.put(like.getFilmId(), like);
+        userLikes.computeIfAbsent(like.getUserId(), f -> new HashSet<>()).add(like);
+        filmLikes.computeIfAbsent(like.getFilmId(), n -> n + 1);
     }
 
     @Override
-    public Like getLike(int filmId) {
-        return likes.get(filmId);
+    public void deleteLike(Like like) {
+        userLikes.get(like.getUserId()).remove(like);
+        filmLikes.get(like.getFilmId() - 1);
     }
 
     @Override
-    public List<Like> getSortedLikes(Comparator<Like> comparator, long limit) {
-        return likes.values().stream()
-                .sorted(comparator)
+    public Map<Integer, Integer> getSortedFilmLikes(long limit) {
+        return filmLikes.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
                 .limit(limit)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new));
+    }
+
+    public void addFilmToLikeList(Integer filmId) {
+        filmLikes.put(filmId, 0);
     }
 }

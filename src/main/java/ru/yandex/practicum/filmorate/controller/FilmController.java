@@ -4,10 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
-import ru.yandex.practicum.filmorate.service.MpaRatingService;
-import ru.yandex.practicum.filmorate.storage.MpaRatingStorage;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -38,9 +37,7 @@ public class FilmController {
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
-        Film createdFilm = filmService.createFilm(film);
-        likeService.addFilmToList(createdFilm.getId());
-        return createdFilm;
+        return filmService.createFilm(film);
     }
 
     @PutMapping
@@ -50,12 +47,12 @@ public class FilmController {
 
     @PutMapping("/{filmId}/like/{userId}")
     public void addLike(@PathVariable int filmId, @PathVariable int userId) {
-        likeService.addLike(filmId, userId);
+        likeService.addLike(new Like(userId, filmId));
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
     public void deleteLike(@PathVariable int filmId, @PathVariable int userId) {
-        likeService.deleteLike(filmId, userId);
+        likeService.deleteLike(new Like(userId, filmId));
     }
 
     @GetMapping("/popular")

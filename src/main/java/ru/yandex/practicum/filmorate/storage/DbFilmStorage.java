@@ -120,7 +120,8 @@ public class DbFilmStorage implements FilmStorage {
                 "left join film_genre as fg on f.film_id = fg.film_id " +
                 "left join genres as g on fg.genre_id = g.genre_id " +
                 "left join mpa_ratings m on f.mpa_rating_id = m.mpa_rating_id " +
-                "where f.film_id=?", filmId);
+                "where f.film_id=? " +
+                "order by film_id, genre_id", filmId);
         return makeFilmList(rowSet).get(0);
     }
 
