@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +9,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.*;
 import static ru.yandex.practicum.filmorate.Constants.FIRST_RELEASE_DATE;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 
@@ -20,15 +22,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import ru.yandex.practicum.filmorate.model.Like;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
+import java.util.Collections;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmControllerTest {
     @Value(value = "${local.server.port}")
     private int port;
@@ -178,7 +184,14 @@ class FilmControllerTest {
         Film[] films = response.getBody();
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(films);
-        assertEquals(film, films[0]);
+        assertEquals(new Film(1,
+                        "name",
+                        "description",
+                        LocalDate.now(),
+                        30,
+                        Collections.emptySet(),
+                        new MpaRating(1, "G")),
+                films[0]);
     }
 
     private static Film getFilmObj() {
@@ -188,7 +201,7 @@ class FilmControllerTest {
                 LocalDate.now(),
                 30,
                 null,
-                null);
+                new MpaRating(1, "G"));
     }
 
     @Test
@@ -233,7 +246,7 @@ class FilmControllerTest {
         filmService.createFilm(film);
         User user = getUser();
         userService.createUser(user);
-        likeService.addLike(new Like(1,1));
+        likeService.addLike(new Like(1, 1));
         ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/films/1/like/1",
                 HttpMethod.DELETE,
                 null,
@@ -262,9 +275,9 @@ class FilmControllerTest {
         userService.createUser(user1);
         User user2 = getUser();
         userService.createUser(user2);
-        likeService.addLike(new Like(1,1));
-        likeService.addLike(new Like(1,2));
-        likeService.addLike(new Like(2,1));
+        likeService.addLike(new Like(1, 1));
+        likeService.addLike(new Like(1, 2));
+        likeService.addLike(new Like(2, 1));
         ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:" + port + "/films/popular",
                 Film[].class);
         assertTrue(response.getStatusCode().is2xxSuccessful());
