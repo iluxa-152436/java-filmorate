@@ -19,6 +19,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
@@ -62,7 +63,9 @@ class FilmControllerTest {
                 "",
                 "description",
                 LocalDate.now(),
-                30));
+                30,
+                null,
+                null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
                 String.class);
@@ -79,7 +82,9 @@ class FilmControllerTest {
                         + "ptiondescriptiondescriptiondescriptiondescription1"
                         + "d",
                 LocalDate.now(),
-                30));
+                30,
+                null,
+                null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
                 String.class);
@@ -95,7 +100,9 @@ class FilmControllerTest {
                         + "descriptiondescriptiondescriptiondescriptiondescri"
                         + "ptiondescriptiondescriptiondescriptiondescription1",
                 LocalDate.now(),
-                30));
+                30,
+                null,
+                null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
                 String.class);
@@ -108,7 +115,9 @@ class FilmControllerTest {
                 "name",
                 "description",
                 FIRST_RELEASE_DATE.minusDays(1),
-                30));
+                30,
+                null,
+                null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
                 String.class);
@@ -121,7 +130,9 @@ class FilmControllerTest {
                 "name",
                 "description",
                 FIRST_RELEASE_DATE,
-                30));
+                30,
+                null,
+                null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
                 String.class);
@@ -134,7 +145,9 @@ class FilmControllerTest {
                 "name",
                 "description",
                 FIRST_RELEASE_DATE,
-                -1));
+                -1,
+                null,
+                null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
                 String.class);
@@ -147,7 +160,9 @@ class FilmControllerTest {
                 "name",
                 "description",
                 FIRST_RELEASE_DATE,
-                0));
+                0,
+                null,
+                null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
                 String.class);
@@ -171,7 +186,9 @@ class FilmControllerTest {
                 "name",
                 "description",
                 LocalDate.now(),
-                30);
+                30,
+                null,
+                null);
     }
 
     @Test
@@ -181,7 +198,9 @@ class FilmControllerTest {
                 "update",
                 "update",
                 LocalDate.now(),
-                30));
+                30,
+                null,
+                null));
         Film updatedFilm = restTemplate.exchange("http://localhost:" + port + "/films/",
                 HttpMethod.PUT,
                 request,
@@ -214,7 +233,7 @@ class FilmControllerTest {
         filmService.createFilm(film);
         User user = getUser();
         userService.createUser(user);
-        likeService.addLike(1, 1);
+        likeService.addLike(new Like(1,1));
         ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/films/1/like/1",
                 HttpMethod.DELETE,
                 null,
@@ -243,9 +262,9 @@ class FilmControllerTest {
         userService.createUser(user1);
         User user2 = getUser();
         userService.createUser(user2);
-        likeService.addLike(1, 1);
-        likeService.addLike(2, 1);
-        likeService.addLike(1, 2);
+        likeService.addLike(new Like(1,1));
+        likeService.addLike(new Like(1,2));
+        likeService.addLike(new Like(2,1));
         ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:" + port + "/films/popular",
                 Film[].class);
         assertTrue(response.getStatusCode().is2xxSuccessful());
