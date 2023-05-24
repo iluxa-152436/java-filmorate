@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface MpaRatingStorage {
     void saveMpaRating(MpaRating mpaRating);
+
     Optional<MpaRating> getMpaRating(int mpaRatingId);
+
     List<MpaRating> getAllMpaRatings();
 }
