@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Repository
 @Qualifier("DB")
-public class DbFriendStorage implements FriendStorage{
+public class DbFriendStorage implements FriendStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
