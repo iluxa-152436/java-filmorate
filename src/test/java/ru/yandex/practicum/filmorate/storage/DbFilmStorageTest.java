@@ -29,7 +29,7 @@ class DbFilmStorageTest {
 
     @AfterEach
     void deleteTestData() {
-        jdbcTemplate.update("DELETE FROM films;"+
+        jdbcTemplate.update("DELETE FROM films;" +
                 "DELETE FROM friends;" +
                 "DELETE FROM app_users;");
     }
@@ -51,7 +51,12 @@ class DbFilmStorageTest {
     @Test
     @Sql("classpath:test_data.sql")
     void updateFilm() {
-        Film film = new Film(2, "updated", "updated", LocalDate.of(1999, 04, 30), 100, Collections.emptySet(),
+        Film film = new Film(2,
+                "updated",
+                "updated",
+                LocalDate.of(1999, 04, 30),
+                100,
+                Collections.emptySet(),
                 new MpaRating(1, "G"));
         filmStorage.updateFilm(film);
         assertEquals(film, filmStorage.getFilm(2));
