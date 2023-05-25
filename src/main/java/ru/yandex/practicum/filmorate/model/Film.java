@@ -8,14 +8,17 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static ru.yandex.practicum.filmorate.Constants.MAX_FILM_DESCRIPTION_LENGTH;
 
-@AllArgsConstructor
+
 @EqualsAndHashCode
 @Setter
 @Getter
+@ToString
 public class Film {
     private int id;
     @NotBlank(message = "name cannot be empty")
@@ -31,4 +34,22 @@ public class Film {
     private int duration;
     private Set<Genre> genres;
     private MpaRating mpa;
+
+    public Film(int id,
+                String name,
+                String description,
+                LocalDate releaseDate,
+                int duration,
+                Set<Genre> genres,
+                MpaRating mpa) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+
+        this.genres = Objects.requireNonNullElseGet(genres, HashSet::new);
+
+        this.mpa = mpa;
+    }
 }
