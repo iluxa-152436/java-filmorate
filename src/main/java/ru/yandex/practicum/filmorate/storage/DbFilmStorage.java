@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,11 +10,14 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
 @Repository
 @Qualifier("DB")
+@Slf4j
 public class DbFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
@@ -68,13 +72,18 @@ public class DbFilmStorage implements FilmStorage {
                     film.getId());
         }
 
-        String sqlRemoveFilmGenre = "delete from film_genre where film_id=?";
-        jdbcTemplate.update(sqlRemoveFilmGenre, film.getId());
+        deleteFilmGenre(film);
         saveFilmGenre(film);
     }
 
+    private void deleteFilmGenre(Film film) {
+        String sqlRemoveFilmGenre = "delete from film_genre where film_id=?";
+        jdbcTemplate.update(sqlRemoveFilmGenre, film.getId());
+    }
+
     private void saveFilmGenre(Film film) {
-        if (film.getGenres() != null) {
+        log.debug("Film contains genres: {}", film.getGenres().toString());
+        if (!film.getGenres().isEmpty()) {
             String sqlFilmGenre = "insert into film_genre(film_id, genre_id) values(?,?)";
             for (Genre genre : film.getGenres()) {
                 jdbcTemplate.update(sqlFilmGenre, film.getId(), genre.getId());
@@ -127,11 +136,14 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public int getNextId() {
-        int nextId;
-        try {
-            nextId = jdbcTemplate.queryForObject("select max(film_id) from films", Integer.class) + 1;
-        } catch (NullPointerException e) {
-            nextId = 1;
+        return jdbcTemplate.query("select count(film_id), max(film_id), from films",
+                (rs, rowNum) -> makeNextId(rs)).get(0);
+    }
+
+    private Integer makeNextId(ResultSet rs) throws SQLException {
+        Integer nextId = 1;
+        if (rs.getInt(1) >= 1) {
+            nextId = rs.getInt(2) + 1;
         }
         return nextId;
     }
