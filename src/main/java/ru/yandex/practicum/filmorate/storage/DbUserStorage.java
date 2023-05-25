@@ -78,11 +78,14 @@ public class DbUserStorage implements UserStorage {
 
     @Override
     public int getNexId() {
-        int nextId;
-        try {
-            nextId = jdbcTemplate.queryForObject("select max(user_id) from app_users", Integer.class) + 1;
-        } catch (NullPointerException e) {
-            nextId = 1;
+        return jdbcTemplate.query("select count(user_id), max(user_id), from app_users",
+                (rs, rowNum) -> makeNextId(rs)).get(0);
+    }
+
+    private Integer makeNextId(ResultSet rs) throws SQLException {
+        Integer nextId = 1;
+        if (rs.getInt(1) >= 1) {
+            nextId = rs.getInt(2) + 1;
         }
         return nextId;
     }
