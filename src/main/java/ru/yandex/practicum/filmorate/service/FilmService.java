@@ -36,19 +36,23 @@ public class FilmService {
     }
 
     private void fillInGenres(Film film) {
-        if (film.getGenres() != null) {
-            Set<Genre> genres = new HashSet<>();
-            for (Genre genre : film.getGenres()) {
-                genres.add(genreService.getGenre(genre.getId()));
-            }
-            film.setGenres(genres);
+        log.debug("Film {} fill in genres previous value = {}", film.getId(), film.getGenres());
+        Set<Genre> genres = new HashSet<>();
+        for (Genre genre : film.getGenres()) {
+            genres.add(genreService.getGenre(genre.getId()));
         }
+        film.setGenres(genres);
+        log.debug("New value = {}", film.getGenres());
     }
+
 
     private void fillInMpaRating(Film film) {
         if (film.getMpa() != null) {
+            log.debug("Film {} fill in mpaRating previous value = {}", film.getId(), film.getMpa());
             film.setMpa(mpaRatingService.getMpaRating(film.getMpa().getId()));
+            log.debug("New value = {}", film.getMpa());
         }
+
     }
 
     public Film updateFilm(Film film) {
