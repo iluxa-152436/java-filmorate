@@ -51,6 +51,7 @@ public class UserService {
 
     private void checkName(User user) {
         if (StringUtils.isBlank(user.getName())) {
+            log.debug("Set new user name = {}", user.getLogin());
             user.setName(user.getLogin());
         }
     }

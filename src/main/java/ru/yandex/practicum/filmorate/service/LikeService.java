@@ -37,6 +37,7 @@ public class LikeService {
     }
 
     public List<Film> getSortedFilms(long limit) {
+        log.debug("Limit on the number of returned values = {}", limit);
         Map<Integer, Integer> sortedIds = likeStorage.getSortedFilmLikes(limit);
         List<Film> sortedFilms = new ArrayList<>();
         for (Integer filmId : sortedIds.keySet()) {

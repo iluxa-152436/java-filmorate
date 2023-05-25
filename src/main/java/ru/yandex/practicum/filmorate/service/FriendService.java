@@ -52,7 +52,9 @@ public class FriendService {
         userService.checkId(otherUserId);
         if (friendStorage.hasFriends(userId) && friendStorage.hasFriends(otherUserId)) {
             Collection<Integer> friendsCollection1 = friendStorage.getFriends(userId);
+            log.debug("Friends collection of user {} = {}", userId, friendsCollection1.toString());
             Collection<Integer> friendsCollection2 = friendStorage.getFriends(otherUserId);
+            log.debug("Friends collection of user {} = {}", userId, friendsCollection2.toString());
             Set<Integer> userIds = friendsCollection1.stream()
                     .filter(friendsCollection2::contains)
                     .collect(Collectors.toSet());
