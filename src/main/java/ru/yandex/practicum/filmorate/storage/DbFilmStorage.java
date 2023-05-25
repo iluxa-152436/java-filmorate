@@ -28,8 +28,8 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public void saveFilm(Film film) {
-        String sqlFilms = "insert into films(film_id, name, release_date, description, duration, mpa_rating_id)"
-                + " values(?,?,?,?,?,?)";
+        String sqlFilms = "insert into films(film_id, name, release_date, description, duration, mpa_rating_id) " +
+                "values(?,?,?,?,?,?)";
         if (film.getMpa() != null) {
             jdbcTemplate.update(sqlFilms,
                     film.getId(),
@@ -52,8 +52,8 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public void updateFilm(Film film) {
-        String sqlFilm = "update films set name=?, release_date=?, description=?, duration=?, mpa_rating_id=?"
-                + " where film_id=?";
+        String sqlFilm = "update films set name=?, release_date=?, description=?, duration=?, mpa_rating_id=? " +
+                "where film_id=?";
         if (film.getMpa() != null) {
             jdbcTemplate.update(sqlFilm,
                     film.getName(),
