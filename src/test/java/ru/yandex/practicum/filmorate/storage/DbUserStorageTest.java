@@ -27,7 +27,7 @@ class DbUserStorageTest {
 
     @AfterEach
     void deleteTestData() {
-        jdbcTemplate.update("DELETE FROM films;"+
+        jdbcTemplate.update("DELETE FROM films;" +
                 "DELETE FROM friends;" +
                 "DELETE FROM app_users;");
     }
