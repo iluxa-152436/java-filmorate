@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MpaRating;
@@ -19,14 +19,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class DbFilmStorageTest {
 
     @Autowired
     @Qualifier("DB")
     private FilmStorage filmStorage;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @AfterEach
+    void deleteTestData() {
+        jdbcTemplate.update("DELETE FROM films;"+
+                "DELETE FROM friends;" +
+                "DELETE FROM app_users;");
+    }
 
     @Test
+    @Sql("classpath:test_data.sql")
     void saveFilm() {
         Film film = new Film(3,
                 "name 3",
@@ -40,6 +49,7 @@ class DbFilmStorageTest {
     }
 
     @Test
+    @Sql("classpath:test_data.sql")
     void updateFilm() {
         Film film = new Film(2, "updated", "updated", LocalDate.of(1999, 04, 30), 100, Collections.emptySet(),
                 new MpaRating(1, "G"));
@@ -48,6 +58,7 @@ class DbFilmStorageTest {
     }
 
     @Test
+    @Sql("classpath:test_data.sql")
     void getFilms() {
         List<Film> films = filmStorage.getFilms();
         System.out.println(films.get(0).getId());
@@ -61,20 +72,21 @@ class DbFilmStorageTest {
     }
 
     @Test
-    @Order(1)
     @Sql("classpath:test_data.sql")
     void containsFilm() {
         assertTrue(filmStorage.containsFilm(1));
     }
 
     @Test
+    @Sql("classpath:test_data.sql")
     void getFilm() {
         Film film = filmStorage.getFilm(1);
         assertEquals(1, film.getId());
     }
 
     @Test
+    @Sql("classpath:test_data.sql")
     void getNextId() {
-        assertEquals(4, filmStorage.getNextId());
+        assertEquals(3, filmStorage.getNextId());
     }
 }

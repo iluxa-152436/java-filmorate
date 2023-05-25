@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class DbUserStorageTest {
     @Autowired
     @Qualifier("DB")
@@ -27,8 +25,14 @@ class DbUserStorageTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @AfterEach
+    void deleteTestData() {
+        jdbcTemplate.update("DELETE FROM films;"+
+                "DELETE FROM friends;" +
+                "DELETE FROM app_users;");
+    }
+
     @Test
-    @Order(1)
     @Sql("classpath:test_data.sql")
     void saveUser() {
         User user = new User(3,
@@ -41,22 +45,22 @@ class DbUserStorageTest {
     }
 
     @Test
-    @Order(2)
+    @Sql("classpath:test_data.sql")
     void updateUser() {
-        User user = new User(3,
+        User user = new User(2,
                 "update@abc.ru",
                 "update",
                 "update",
                 LocalDate.of(1989, 4, 13));
         userStorage.updateUser(user);
-        assertEquals(user, userStorage.getUser(3));
+        assertEquals(user, userStorage.getUser(2));
     }
 
     @Test
-    @Order(3)
+    @Sql("classpath:test_data.sql")
     void getAllUsers() {
         List<User> users = userStorage.getAllUsers();
-        assertEquals(3, users.size());
+        assertEquals(2, users.size());
         assertTrue(users.contains(new User(1,
                 "email1@email.ru",
                 "login1",
@@ -65,7 +69,7 @@ class DbUserStorageTest {
     }
 
     @Test
-    @Order(4)
+    @Sql("classpath:test_data.sql")
     void getUsers() {
         List<User> users = userStorage.getUsers(Set.of(1, 2));
         assertEquals(2, users.size());
@@ -82,7 +86,7 @@ class DbUserStorageTest {
     }
 
     @Test
-    @Order(5)
+    @Sql("classpath:test_data.sql")
     void getUser() {
         User user = userStorage.getUser(1);
         assertEquals(new User(1,
@@ -93,14 +97,14 @@ class DbUserStorageTest {
     }
 
     @Test
-    @Order(6)
+    @Sql("classpath:test_data.sql")
     void containsUser() {
         userStorage.containsUser(1);
     }
 
     @Test
-    @Order(7)
+    @Sql("classpath:test_data.sql")
     void getNexId() {
-        assertEquals(4, userStorage.getNexId());
+        assertEquals(3, userStorage.getNexId());
     }
 }

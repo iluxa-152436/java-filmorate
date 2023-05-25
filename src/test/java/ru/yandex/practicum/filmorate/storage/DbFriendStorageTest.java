@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -16,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class DbFriendStorageTest {
     @Autowired
     @Qualifier("DB")
@@ -24,8 +21,14 @@ class DbFriendStorageTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @AfterEach
+    void deleteTestData() {
+        jdbcTemplate.update("DELETE FROM films;"+
+                "DELETE FROM friends;" +
+                "DELETE FROM app_users;");
+    }
+
     @Test
-    @Order(1)
     @Sql("classpath:test_data.sql")
     void addFriend() {
         friendStorage.addFriend(1, 2);
@@ -33,20 +36,20 @@ class DbFriendStorageTest {
     }
 
     @Test
-    @Order(2)
+    @Sql("classpath:test_data.sql")
     void deleteFriend() {
-        friendStorage.deleteFriend(1, 2);
+        friendStorage.deleteFriend(2, 1);
         assertEquals(0, jdbcTemplate.queryForObject("select count(*) from friends", Integer.class));
     }
 
     @Test
-    @Order(3)
+    @Sql("classpath:test_data.sql")
     void getFriends() {
         assertEquals(Set.of(1), friendStorage.getFriends(2));
     }
 
     @Test
-    @Order(4)
+    @Sql("classpath:test_data.sql")
     void hasFriends() {
         assertTrue(friendStorage.hasFriends(2));
     }
