@@ -27,6 +27,7 @@ public class GenreController {
 
     @GetMapping("/{genreId}")
     public Genre getGenre(@PathVariable int genreId) {
+        log.debug("Received value genreId = {}", genreId);
         return genreService.getGenre(genreId);
     }
 }
