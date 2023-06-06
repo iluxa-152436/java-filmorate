@@ -2,13 +2,12 @@ package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.Like;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.Map;
 
 public interface LikeStorage {
     void saveLike(Like like);
 
-    List<Like> getSortedLikes(Comparator<Like> comparator, long limit);
+    void deleteLike(Like like);
 
-    Like getLike(int filmId);
+    Map<Integer, Integer> getSortedFilmLikes(long limit);
 }

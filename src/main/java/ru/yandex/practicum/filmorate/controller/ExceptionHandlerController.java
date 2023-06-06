@@ -1,15 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.FindFilmException;
-import ru.yandex.practicum.filmorate.exception.FindUserException;
-import ru.yandex.practicum.filmorate.exception.ValidateFilmException;
-import ru.yandex.practicum.filmorate.exception.ValidateUserException;
+import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.ApiErrorMessage;
 
 import javax.validation.ConstraintViolationException;
@@ -17,7 +15,11 @@ import javax.validation.ConstraintViolationException;
 @Slf4j
 @RestControllerAdvice
 public class ExceptionHandlerController {
-    @ExceptionHandler(value = {FindFilmException.class, FindUserException.class})
+    @ExceptionHandler(value = {FindFilmException.class,
+            FindUserException.class,
+            EmptyResultDataAccessException.class,
+            FindMpaRatingException.class,
+            FindGenreException.class})
     public ResponseEntity<ApiErrorMessage> handleNotFoundException(Exception exception) {
         log.debug("Получен статус 404 Not found {}", exception.getMessage(), exception);
         return ResponseEntity

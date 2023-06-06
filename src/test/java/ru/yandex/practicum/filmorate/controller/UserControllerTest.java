@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -7,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -24,6 +26,8 @@ import java.time.LocalDate;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserControllerTest {
     @Value(value = "${local.server.port}")
     private int port;
@@ -215,6 +219,10 @@ class UserControllerTest {
                 HttpMethod.PUT,
                 null,
                 String.class);
+        ResponseEntity<String> response2 = restTemplate.exchange("http://localhost:" + port + "/users/2/friends/1",
+                HttpMethod.PUT,
+                null,
+                String.class);
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(1, friendService.getFriends(1).size());
         assertEquals(1, friendService.getFriends(2).size());
@@ -228,7 +236,7 @@ class UserControllerTest {
         userService.createUser(user2);
         friendService.addFriend(1, 2);
         assertEquals(1, friendService.getFriends(1).size());
-        assertEquals(1, friendService.getFriends(2).size());
+        assertEquals(0, friendService.getFriends(2).size());
         ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/users/1/friends/2",
                 HttpMethod.DELETE,
                 null,
@@ -261,7 +269,9 @@ class UserControllerTest {
         User user3 = getUser();
         userService.createUser(user3);
         friendService.addFriend(1, 2);
+        friendService.addFriend(2, 1);
         friendService.addFriend(2, 3);
+        friendService.addFriend(3, 2);
         ResponseEntity<User[]> response = restTemplate.getForEntity("http://localhost:"
                         + port
                         + "/users/1/friends/common/3",

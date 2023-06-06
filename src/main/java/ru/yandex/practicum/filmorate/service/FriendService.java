@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FriendStorage;
@@ -18,7 +19,7 @@ public class FriendService {
     private final FriendStorage friendStorage;
 
     @Autowired
-    public FriendService(UserService userService, FriendStorage friendStorage) {
+    public FriendService(UserService userService, @Qualifier("DB") FriendStorage friendStorage) {
         this.userService = userService;
         this.friendStorage = friendStorage;
     }
@@ -27,7 +28,6 @@ public class FriendService {
         userService.checkId(userId);
         userService.checkId(friendId);
         friendStorage.addFriend(userId, friendId);
-        friendStorage.addFriend(friendId, userId);
     }
 
     public void deleteFriend(int userId, int friendId) {
@@ -52,7 +52,9 @@ public class FriendService {
         userService.checkId(otherUserId);
         if (friendStorage.hasFriends(userId) && friendStorage.hasFriends(otherUserId)) {
             Collection<Integer> friendsCollection1 = friendStorage.getFriends(userId);
+            log.debug("Friends collection of user {} = {}", userId, friendsCollection1.toString());
             Collection<Integer> friendsCollection2 = friendStorage.getFriends(otherUserId);
+            log.debug("Friends collection of user {} = {}", userId, friendsCollection2.toString());
             Set<Integer> userIds = friendsCollection1.stream()
                     .filter(friendsCollection2::contains)
                     .collect(Collectors.toSet());

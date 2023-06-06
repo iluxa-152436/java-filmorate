@@ -4,12 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -25,20 +26,19 @@ public class FilmController {
     }
 
     @GetMapping
-    public Collection<Film> getFilms() {
+    public List<Film> getFilms() {
         return filmService.getFilms();
     }
 
     @GetMapping("/{filmId}")
     public Film getFilm(@PathVariable int filmId) {
+        log.debug("Received value filmId = {}", filmId);
         return filmService.getFilm(filmId);
     }
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
-        Film createdFilm = filmService.createFilm(film);
-        likeService.addFilmToList(createdFilm.getId());
-        return createdFilm;
+        return filmService.createFilm(film);
     }
 
     @PutMapping
@@ -48,16 +48,18 @@ public class FilmController {
 
     @PutMapping("/{filmId}/like/{userId}")
     public void addLike(@PathVariable int filmId, @PathVariable int userId) {
-        likeService.addLike(filmId, userId);
+        log.debug("Received values filmId = {}, userId = {}", filmId, userId);
+        likeService.addLike(new Like(userId, filmId));
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
     public void deleteLike(@PathVariable int filmId, @PathVariable int userId) {
-        likeService.deleteLike(filmId, userId);
+        log.debug("Received values filmId = {}, userId = {}", filmId, userId);
+        likeService.deleteLike(new Like(userId, filmId));
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive long count) {
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive long count) {
         return likeService.getSortedFilms(count);
     }
 }
