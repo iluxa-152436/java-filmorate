@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FindMpaRatingException;
 import ru.yandex.practicum.filmorate.model.MpaRating;
-import ru.yandex.practicum.filmorate.storage.MpaRatingStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaRatingStorage;
 
 import java.util.List;
 

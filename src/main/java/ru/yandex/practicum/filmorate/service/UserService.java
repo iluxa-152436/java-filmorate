@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.exception.FindUserException;
 import ru.yandex.practicum.filmorate.exception.ValidateUserException;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 import java.util.Set;
