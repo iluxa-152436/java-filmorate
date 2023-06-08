@@ -10,4 +10,10 @@ public interface LikeStorage {
     void deleteLike(Like like);
 
     Map<Integer, Integer> getSortedFilmLikes(long limit);
+
+    Map<Integer, Integer> getSortedFilmLikes(long limit, int genreId, String releaseDate);
+
+    Map<Integer, Integer> getSortedFilmLikes(long limit, String releaseDate);
+
+    Map<Integer, Integer> getSortedFilmLikes(long limit, int genreId);
 }

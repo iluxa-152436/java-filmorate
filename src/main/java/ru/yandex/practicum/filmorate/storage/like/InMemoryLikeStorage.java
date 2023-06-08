@@ -43,6 +43,24 @@ public class InMemoryLikeStorage implements LikeStorage {
                         LinkedHashMap::new));
     }
 
+    @Override
+    public Map<Integer, Integer> getSortedFilmLikes(long limit, int genreId, String releaseDate) {
+        return null;
+        //TODO сделать реализацию
+    }
+
+    @Override
+    public Map<Integer, Integer> getSortedFilmLikes(long limit, String releaseDate) {
+        return null;
+        //TODO сделать реализацию
+    }
+
+    @Override
+    public Map<Integer, Integer> getSortedFilmLikes(long limit, int genreId) {
+        return null;
+        //TODO сделать реализацию
+    }
+
     public void addFilmToLikeList(Integer filmId) {
         filmLikes.put(filmId, 0);
     }
