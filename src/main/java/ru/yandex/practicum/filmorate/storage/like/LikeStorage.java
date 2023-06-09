@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.storage.like;
 
 import ru.yandex.practicum.filmorate.model.Like;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface LikeStorage {
     void saveLike(Like like);
@@ -12,5 +12,5 @@ public interface LikeStorage {
 
     Map<Integer, Integer> getSortedFilmLikes(long limit);
 
-    Map<Integer, Integer> getSortedByLikesFilteredByFilmIds(Set<Integer> filmIds);
+    Map<Integer, Integer> getSortedByLikesFilteredByFilmIds(String query, List<String> by);
 }

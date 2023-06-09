@@ -44,7 +44,7 @@ public class InMemoryLikeStorage implements LikeStorage {
     }
 
     @Override
-    public Map<Integer, Integer> getSortedByLikesFilteredByFilmIds(Set<Integer> filmIds) {
+    public Map<Integer, Integer> getSortedByLikesFilteredByFilmIds(String query, List<String> by) {
         return null;
         //TODO реализовать поиск с фильтрацией
     }

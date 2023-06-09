@@ -64,7 +64,7 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public List<Film> searchFilms(@RequestParam String query) {
-        return likeService.getSortedAndFilteredFilms(query);
+    public List<Film> searchFilms(@RequestParam String query, @RequestParam List<String> by) {
+        return likeService.getSortedAndFilteredFilms(query, by);
     }
 }

@@ -42,3 +42,14 @@ CREATE TABLE IF NOT EXISTS friends (
   friend_id INTEGER REFERENCES app_users (user_id),
   CONSTRAINT pk_friends PRIMARY KEY (user_id, friend_id)
 );
+
+CREATE TABLE IF NOT EXISTS directors (
+  director_id INTEGER PRIMARY KEY,
+  name varchar(40) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS film_director (
+  director_id INTEGER REFERENCES directors (director_id),
+  film_id INTEGER REFERENCES films (film_id),
+  CONSTRAINT pk_film_director PRIMARY KEY (director_id, film_id)
+);
