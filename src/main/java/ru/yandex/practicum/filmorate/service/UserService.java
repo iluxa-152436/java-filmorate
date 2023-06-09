@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FindUserException;
 import ru.yandex.practicum.filmorate.exception.ValidateUserException;
 import ru.yandex.practicum.filmorate.model.User;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
@@ -62,6 +62,10 @@ public class UserService {
         checkLogin(user);
         userStorage.updateUser(user);
         return user;
+    }
+
+    public void deleteUserById(int userId) {
+        userStorage.deleteUserById(userId);
     }
 
     private void checkId(User user) {

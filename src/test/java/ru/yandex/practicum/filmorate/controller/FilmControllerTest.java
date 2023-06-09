@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.*;
 import static ru.yandex.practicum.filmorate.Constants.FIRST_RELEASE_DATE;
@@ -27,9 +29,12 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.film.DbFilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
@@ -284,6 +289,27 @@ class FilmControllerTest {
         Film[] films = response.getBody();
         assertEquals(2, films.length);
         assertEquals(1, films[0].getId());
+    }
+
+    @Test
+    void deleteFilmById() {
+        Film film1 = getFilmObj();
+        filmService.createFilm(film1);
+        Film film2 = getFilmObj();
+        filmService.createFilm(film2);
+        Film film3 = getFilmObj();
+        filmService.createFilm(film3);
+
+        Optional<Integer> filmsOptionalSize = Optional.of(filmService.getFilms().size());
+        assertThat(filmsOptionalSize).isPresent()
+                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(3));
+
+        filmService.deleteFilmById(filmService.getFilms().get(0).getId());
+
+        filmsOptionalSize = Optional.of(filmService.getFilms().size());
+        assertThat(filmsOptionalSize)
+                .isPresent()
+                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
     }
 
     private static User getUser() {
