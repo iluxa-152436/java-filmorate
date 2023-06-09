@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FindFilmException;
+import ru.yandex.practicum.filmorate.model.BadRequestError;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -72,6 +73,11 @@ public class FilmService {
     protected void checkId(int filmId) {
         if (!storage.containsFilm(filmId)) {
             throw new FindFilmException("Фильм с id: " + filmId + " не найден");
+        }
+    }
+    protected void checkIdAndThrowBadRequest(int filmId) {
+        if (!storage.containsFilm(filmId)) {
+            throw new BadRequestError("Фильм с id: " + filmId + " не найден");
         }
     }
 
