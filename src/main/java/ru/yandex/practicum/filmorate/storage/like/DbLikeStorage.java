@@ -15,6 +15,11 @@ import java.util.Map;
 public class DbLikeStorage implements LikeStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    public DbLikeStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     @Override
     public Map<Integer, Integer> getSortedFilmLikes(long limit, int genreId, String releaseDate) {
         String sql = "select f.film_id, count(l.user_id) from films as f " +
@@ -51,11 +56,6 @@ public class DbLikeStorage implements LikeStorage {
                 "limit ?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, genreId, limit);
         return makeFilmLikesMap(rowSet);
-    }
-
-    @Autowired
-    public DbLikeStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
