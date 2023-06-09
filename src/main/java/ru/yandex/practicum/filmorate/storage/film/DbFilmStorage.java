@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.FindFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
@@ -14,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @Qualifier("DB")
@@ -140,6 +142,14 @@ public class DbFilmStorage implements FilmStorage {
                 (rs, rowNum) -> makeNextId(rs)).get(0);
     }
 
+    @Override
+    public void deleteFilmById(int filmId) {
+        String sqlQuery = "DELETE FROM films WHERE film_id = ?";
+        if (jdbcTemplate.update(sqlQuery, filmId) == 0) {
+            throw new FindFilmException("Film с id = " + filmId + " не найден, удаление невозможно.");
+        }
+    }
+
     private Integer makeNextId(ResultSet rs) throws SQLException {
         Integer nextId = 1;
         if (rs.getInt(1) >= 1) {
@@ -188,6 +198,7 @@ public class DbFilmStorage implements FilmStorage {
             } else {
                 //к существующему фильму добавляем еще один жанр
                 film.getGenres().add(new Genre(genreId, genreName));
+                film.setGenres(film.getGenres().stream().sorted(Comparator.comparingInt(Genre::getId)).collect(Collectors.toCollection(LinkedHashSet::new))); // >>>> добавлено для сортировки жанров
             }
         }
         return List.copyOf(films.values());

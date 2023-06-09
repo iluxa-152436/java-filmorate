@@ -1,26 +1,21 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.*;
-import static ru.yandex.practicum.filmorate.Constants.FIRST_RELEASE_DATE;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.exception.ValidateFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.User;
@@ -30,6 +25,12 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
+import static ru.yandex.practicum.filmorate.Constants.FIRST_RELEASE_DATE;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
@@ -284,6 +285,27 @@ class FilmControllerTest {
         Film[] films = response.getBody();
         assertEquals(2, films.length);
         assertEquals(1, films[0].getId());
+    }
+
+    @Test
+    void deleteFilmById() {
+        Film film1 = getFilmObj();
+        filmService.createFilm(film1);
+        Film film2 = getFilmObj();
+        filmService.createFilm(film2);
+        Film film3 = getFilmObj();
+        filmService.createFilm(film3);
+
+        Optional<Integer> filmsOptionalSize = Optional.of(filmService.getFilms().size());
+        assertThat(filmsOptionalSize).isPresent()
+                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(3));
+
+        filmService.deleteFilmById(filmService.getFilms().get(0).getId());
+
+        filmsOptionalSize = Optional.of(filmService.getFilms().size());
+        assertThat(filmsOptionalSize)
+                .isPresent()
+                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
     }
 
     private static User getUser() {
