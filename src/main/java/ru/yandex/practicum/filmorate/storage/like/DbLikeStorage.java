@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Like;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Repository
 @Qualifier("DB")
@@ -34,14 +35,20 @@ public class DbLikeStorage implements LikeStorage {
 
     @Override
     public Map<Integer, Integer> getSortedFilmLikes(long limit) {
-        String sql = "select f.film_id, count(l.user_id) from films as f " +
-                "left join likes as l on f.film_id=l.film_id " +
-                "group by f.film_id " +
+        String sql = "select l.film_id, count(l.user_id) from likes as l " +
+                "group by l.film_id " +
                 "order by count(l.user_id) desc " +
                 "limit ?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, limit);
         return makeFilmLikesMap(rowSet);
     }
+
+    @Override
+    public Map<Integer, Integer> getSortedByLikesFilteredByFilmIds(Set<Integer> filmIds) {
+
+        return null;
+    }
+
 
     private Map<Integer, Integer> makeFilmLikesMap(SqlRowSet rowSet) {
         Map<Integer, Integer> filmLikesList = new HashMap<>();

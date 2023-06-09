@@ -43,6 +43,12 @@ public class InMemoryLikeStorage implements LikeStorage {
                         LinkedHashMap::new));
     }
 
+    @Override
+    public Map<Integer, Integer> getSortedByLikesFilteredByFilmIds(Set<Integer> filmIds) {
+        return null;
+        //TODO реализовать поиск с фильтрацией
+    }
+
     public void addFilmToLikeList(Integer filmId) {
         filmLikes.put(filmId, 0);
     }

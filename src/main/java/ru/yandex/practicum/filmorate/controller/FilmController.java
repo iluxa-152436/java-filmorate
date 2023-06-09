@@ -62,4 +62,9 @@ public class FilmController {
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive long count) {
         return likeService.getSortedFilms(count);
     }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query) {
+        return likeService.getSortedAndFilteredFilms(query);
+    }
 }
