@@ -19,5 +19,6 @@ public interface UserStorage {
     boolean containsUser(int userId);
 
     int getNexId();
+
     void deleteUserById(int userId);
 }
