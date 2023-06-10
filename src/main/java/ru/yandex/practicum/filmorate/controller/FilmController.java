@@ -62,4 +62,9 @@ public class FilmController {
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive long count) {
         return likeService.getSortedFilms(count);
     }
+    @DeleteMapping("/{filmId}")
+    public void deleteFilmById(@PathVariable int filmId) {
+        log.debug("Received values filmId = {}", filmId);
+        filmService.deleteFilmById(filmId);
+    }
 }

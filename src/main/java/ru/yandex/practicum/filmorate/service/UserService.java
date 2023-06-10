@@ -75,4 +75,8 @@ public class UserService {
             throw new FindUserException("Пользователь с id: " + userId + " не найден");
         }
     }
+
+    public void deleteUserById(int userId) {
+        userStorage.deleteUserById(userId);
+    }
 }
