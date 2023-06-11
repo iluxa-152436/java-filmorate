@@ -19,13 +19,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.exception.ValidateFilmException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import ru.yandex.practicum.filmorate.model.Like;
-import ru.yandex.practicum.filmorate.model.MpaRating;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -33,6 +30,9 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
+
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
@@ -56,7 +56,7 @@ class FilmControllerTest {
 
     @Test
     void createFilm() {
-        HttpEntity<Film> request = new HttpEntity<>(getFilmObj());
+        HttpEntity<Film> request = new HttpEntity<>(prepareFilmObj());
         Film film = restTemplate.postForObject("http://localhost:" + port + "/films", request, Film.class);
         Assertions.assertNotNull(film);
         assertEquals(1, film.getId());
@@ -73,6 +73,7 @@ class FilmControllerTest {
                 "description",
                 LocalDate.now(),
                 30,
+                null,
                 null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
@@ -93,6 +94,7 @@ class FilmControllerTest {
                 LocalDate.now(),
                 30,
                 null,
+                null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
@@ -111,6 +113,7 @@ class FilmControllerTest {
                 LocalDate.now(),
                 30,
                 null,
+                null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
@@ -125,6 +128,7 @@ class FilmControllerTest {
                 "description",
                 FIRST_RELEASE_DATE.minusDays(1),
                 30,
+                null,
                 null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
@@ -141,6 +145,7 @@ class FilmControllerTest {
                 FIRST_RELEASE_DATE,
                 30,
                 null,
+                null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
@@ -155,6 +160,7 @@ class FilmControllerTest {
                 "description",
                 FIRST_RELEASE_DATE,
                 -1,
+                null,
                 null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
@@ -171,6 +177,7 @@ class FilmControllerTest {
                 FIRST_RELEASE_DATE,
                 0,
                 null,
+                null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
@@ -180,7 +187,7 @@ class FilmControllerTest {
 
     @Test
     void getFilms() throws ValidateFilmException {
-        Film film = getFilmObj();
+        Film film = prepareFilmObj();
         filmService.createFilm(film);
         ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:" + port + "/films",
                 Film[].class);
@@ -193,28 +200,47 @@ class FilmControllerTest {
                         LocalDate.now(),
                         30,
                         Collections.emptySet(),
-                        new MpaRating(1, "G")),
+                        new MpaRating(1, "G"),
+                        null),
                 films[0]);
     }
 
-    private static Film getFilmObj() {
+    private static Film prepareFilmObj() {
         return new Film(1,
                 "name",
                 "description",
                 LocalDate.now(),
                 30,
                 null,
-                new MpaRating(1, "G"));
+                new MpaRating(1, "G"),
+                null);
+    }
+
+    private static Film prepareFilmObjWithGenreAndYear() {
+        Genre genre1 = new Genre(1, "Комедия");
+        Genre genre2 = new Genre(2, "Драма");
+        Set<Genre> genres = new HashSet<>();
+        genres.add(genre1);
+        genres.add(genre2);
+        return new Film(1,
+                "name",
+                "description",
+                LocalDate.of(1999, 04, 20),
+                30,
+                genres,
+                new MpaRating(1, "G"),
+                null);
     }
 
     @Test
     void updateFilm() throws ValidateFilmException {
-        filmService.createFilm(getFilmObj());
+        filmService.createFilm(prepareFilmObj());
         HttpEntity<Film> request = new HttpEntity<>(new Film(1,
                 "update",
                 "update",
                 LocalDate.now(),
                 30,
+                null,
                 null,
                 null));
         Film updatedFilm = restTemplate.exchange("http://localhost:" + port + "/films/",
@@ -232,7 +258,7 @@ class FilmControllerTest {
 
     @Test
     void addLike() {
-        Film film = getFilmObj();
+        Film film = prepareFilmObj();
         filmService.createFilm(film);
         User user = getUser();
         userService.createUser(user);
@@ -245,7 +271,7 @@ class FilmControllerTest {
 
     @Test
     void deleteLike() {
-        Film film = getFilmObj();
+        Film film = prepareFilmObj();
         filmService.createFilm(film);
         User user = getUser();
         userService.createUser(user);
@@ -270,9 +296,9 @@ class FilmControllerTest {
 
     @Test
     void getPopularFilms() {
-        Film film1 = getFilmObj();
+        Film film1 = prepareFilmObj();
         filmService.createFilm(film1);
-        Film film2 = getFilmObj();
+        Film film2 = prepareFilmObj();
         filmService.createFilm(film2);
         User user1 = getUser();
         userService.createUser(user1);
@@ -308,6 +334,118 @@ class FilmControllerTest {
         assertThat(filmsOptionalSize)
                 .isPresent()
                 .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
+    }
+  
+    @Test
+    void getPopularFilmsFilterByYear() {
+        Film film1 = prepareFilmObjWithGenreAndYear();
+        filmService.createFilm(film1);
+        Film film2 = prepareFilmObjWithGenreAndYear();
+        filmService.createFilm(film2);
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+        likeService.addLike(new Like(1, 1));
+        likeService.addLike(new Like(1, 2));
+        likeService.addLike(new Like(2, 1));
+        ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:" + port + "/films/popular?year=1999",
+                Film[].class);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        Film[] films = response.getBody();
+        assertEquals(2, films.length);
+        assertEquals(1, films[0].getId());
+    }
+
+    @Test
+    void getPopularFilmsFilterByGenre() {
+        Film film1 = prepareFilmObjWithGenreAndYear();
+        filmService.createFilm(film1);
+        Film film2 = prepareFilmObjWithGenreAndYear();
+        filmService.createFilm(film2);
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+        likeService.addLike(new Like(1, 1));
+        likeService.addLike(new Like(1, 2));
+        likeService.addLike(new Like(2, 1));
+        ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:"
+                        + port
+                        + "/films/popular?genreId=2",
+                Film[].class);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        Film[] films = response.getBody();
+        assertEquals(2, films.length);
+        assertEquals(1, films[0].getId());
+    }
+
+    @Test
+    void getPopularFilmsFilterByGenreEmptyResult() {
+        Film film1 = prepareFilmObjWithGenreAndYear();
+        filmService.createFilm(film1);
+        Film film2 = prepareFilmObjWithGenreAndYear();
+        filmService.createFilm(film2);
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+        likeService.addLike(new Like(1, 1));
+        likeService.addLike(new Like(1, 2));
+        likeService.addLike(new Like(2, 1));
+        ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:"
+                        + port
+                        + "/films/popular?genreId=3",
+                Film[].class);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        Film[] films = response.getBody();
+        assertEquals(0, films.length);
+    }
+
+    @Test
+    void getPopularFilmsFilterByGenreAndYear() {
+        Film film1 = prepareFilmObjWithGenreAndYear();
+        filmService.createFilm(film1);
+        Film film2 = prepareFilmObjWithGenreAndYear();
+        filmService.createFilm(film2);
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+        likeService.addLike(new Like(1, 1));
+        likeService.addLike(new Like(1, 2));
+        likeService.addLike(new Like(2, 1));
+        ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:"
+                        + port
+                        + "/films/popular?genreId=2&year=1999",
+                Film[].class);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        Film[] films = response.getBody();
+        assertEquals(2, films.length);
+        assertEquals(1, films[0].getId());
+    }
+
+    @Test
+    void getPopularFilmsFilterByYearEmptyResult() {
+        Film film1 = prepareFilmObjWithGenreAndYear();
+        filmService.createFilm(film1);
+        Film film2 = prepareFilmObjWithGenreAndYear();
+        filmService.createFilm(film2);
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+        likeService.addLike(new Like(1, 1));
+        likeService.addLike(new Like(1, 2));
+        likeService.addLike(new Like(2, 1));
+        ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:"
+                        + port
+                        + "/films/popular?year=2000",
+                Film[].class);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        Film[] films = response.getBody();
+        assertEquals(0, films.length);
+
     }
 
     private static User getUser() {
