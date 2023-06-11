@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS app_users CASCADE;
+DROP TABLE IF EXISTS films CASCADE;
+DROP TABLE IF EXISTS genres CASCADE;
+DROP TABLE IF EXISTS mpa_rating CASCADE;
+DROP TABLE IF EXISTS film_genre CASCADE;
+DROP TABLE IF EXISTS friends CASCADE;
+DROP TABLE IF EXISTS likes CASCADE;
+
 CREATE TABLE IF NOT EXISTS app_users (
   user_id INTEGER PRIMARY KEY,
   email varchar(40) NOT NULL,
@@ -22,23 +30,23 @@ CREATE TABLE IF NOT EXISTS films (
   release_date date,
   description varchar(200),
   duration integer,
-  mpa_rating_id INTEGER REFERENCES mpa_ratings (mpa_rating_id)
+  mpa_rating_id INTEGER REFERENCES mpa_ratings (mpa_rating_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS film_genre (
-  film_id INTEGER REFERENCES films (film_id),
-  genre_id INTEGER REFERENCES genres (genre_id),
+  film_id INTEGER REFERENCES films (film_id) ON DELETE CASCADE,
+  genre_id INTEGER REFERENCES genres (genre_id) ON DELETE RESTRICT,
   CONSTRAINT pk_film_genre PRIMARY KEY (film_id, genre_id)
 );
 
 CREATE TABLE IF NOT EXISTS likes (
-  user_id INTEGER REFERENCES app_users (user_id),
-  film_id INTEGER REFERENCES films (film_id),
+  user_id INTEGER REFERENCES app_users (user_id) ON DELETE CASCADE,
+  film_id INTEGER REFERENCES films (film_id) ON DELETE CASCADE,
   CONSTRAINT pk_likes PRIMARY KEY (user_id, film_id)
 );
 
 CREATE TABLE IF NOT EXISTS friends (
-  user_id INTEGER REFERENCES app_users (user_id),
-  friend_id INTEGER REFERENCES app_users (user_id),
+  user_id INTEGER REFERENCES app_users (user_id) ON DELETE CASCADE,
+  friend_id INTEGER REFERENCES app_users (user_id) ON DELETE CASCADE,
   CONSTRAINT pk_friends PRIMARY KEY (user_id, friend_id)
 );

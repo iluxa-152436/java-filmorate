@@ -64,4 +64,10 @@ public class FilmController {
                                       @RequestParam(required = false) String year) {
         return likeService.getSortedFilms(count, genreId, year);
     }
+
+    @DeleteMapping("/{filmId}")
+    public void deleteFilmById(@PathVariable int filmId) {
+        log.debug("Received values filmId = {}", filmId);
+        filmService.deleteFilmById(filmId);
+    }
 }

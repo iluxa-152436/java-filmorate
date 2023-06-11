@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
@@ -23,6 +25,7 @@ import ru.yandex.practicum.filmorate.service.FriendService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
@@ -279,5 +282,26 @@ class UserControllerTest {
         User[] users = response.getBody();
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(2, users[0].getId());
+    }
+
+    @Test
+    void deleteUserById() {
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+        User user3 = getUser();
+        userService.createUser(user3);
+
+        Optional<Integer> optionalUserSize = Optional.of(userService.getUsers().size());
+        assertThat(optionalUserSize).isPresent()
+                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(3));
+
+        userService.deleteUserById(userService.getUsers().get(0).getId());
+
+        optionalUserSize = Optional.of(userService.getUsers().size());
+        assertThat(optionalUserSize)
+                .isPresent()
+                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
     }
 }

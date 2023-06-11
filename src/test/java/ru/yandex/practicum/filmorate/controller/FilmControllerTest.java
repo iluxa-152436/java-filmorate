@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.*;
 import static ru.yandex.practicum.filmorate.Constants.FIRST_RELEASE_DATE;
@@ -27,8 +29,10 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.HashSet;
 import java.util.Set;
+
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
@@ -312,6 +316,27 @@ class FilmControllerTest {
     }
 
     @Test
+    void deleteFilmById() {
+        Film film1 = prepareFilmObj();
+        filmService.createFilm(film1);
+        Film film2 = prepareFilmObj();
+        filmService.createFilm(film2);
+        Film film3 = prepareFilmObj();
+        filmService.createFilm(film3);
+
+        Optional<Integer> filmsOptionalSize = Optional.of(filmService.getFilms().size());
+        assertThat(filmsOptionalSize).isPresent()
+                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(3));
+
+        filmService.deleteFilmById(filmService.getFilms().get(0).getId());
+
+        filmsOptionalSize = Optional.of(filmService.getFilms().size());
+        assertThat(filmsOptionalSize)
+                .isPresent()
+                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
+    }
+
+    @Test
     void getPopularFilmsFilterByYear() {
         Film film1 = prepareFilmObjWithGenreAndYear();
         filmService.createFilm(film1);
@@ -420,6 +445,7 @@ class FilmControllerTest {
         assertTrue(response.getStatusCode().is2xxSuccessful());
         Film[] films = response.getBody();
         assertEquals(0, films.length);
+
     }
 
     private static User getUser() {
