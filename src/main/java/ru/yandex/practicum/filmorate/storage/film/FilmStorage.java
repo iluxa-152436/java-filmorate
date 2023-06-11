@@ -18,5 +18,5 @@ public interface FilmStorage {
 
     int getNextId();
 
-    void deleteFilmById(@PathVariable int filmId);
+    void deleteFilmById(int filmId);
 }
