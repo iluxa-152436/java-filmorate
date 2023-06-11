@@ -14,17 +14,17 @@ public class ReviewsLikesController {
         this.reviewsLikesService = reviewsLikesService;
     }
 
-    @PutMapping ("/like/{userId}")
-    public void addLike (@PathVariable int id, @PathVariable int userId){
+    @PutMapping("/like/{userId}")
+    public void addLike(@PathVariable int id, @PathVariable int userId) {
         reviewsLikesService.addLike(id, userId);
     }
 
-    @PutMapping ("/dislike/{userId}")
-    public void addDislike (@PathVariable int id, @PathVariable int userId){
+    @PutMapping("/dislike/{userId}")
+    public void addDislike(@PathVariable int id, @PathVariable int userId) {
         reviewsLikesService.addDislike(id, userId);
     }
 
-    @DeleteMapping ("/like/{userId}")
+    @DeleteMapping("/like/{userId}")
     public void deleteLike(@PathVariable int id, @PathVariable int userId) {
         reviewsLikesService.deleteLike(id, userId);
     }

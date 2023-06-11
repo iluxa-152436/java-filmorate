@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 @Getter
 @Setter
@@ -16,14 +15,16 @@ public class Review {
     private int id;
     @NotNull
     private String content;
-    @NotNull
     @JsonProperty("isPositive")
-    private boolean isPositive;
     @NotNull
-    @Positive
-    private int userId;
+    private Boolean isPositive;
     @NotNull
-    @Positive
-    private int filmId;
+    private Integer userId;
+    @NotNull
+    private Integer filmId;
     private int useful;
+
+    public Object isPositive() {
+        return isPositive;
+    }
 }

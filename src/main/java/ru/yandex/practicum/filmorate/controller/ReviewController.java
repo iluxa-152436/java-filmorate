@@ -26,22 +26,22 @@ public class ReviewController {
 
     @PutMapping
     public Review updateReview(@Valid @RequestBody Review review) {
-       return reviewService.update(review);
+        return reviewService.update(review);
     }
 
-    @DeleteMapping ("/{id}")
+    @DeleteMapping("/{id}")
     public void deleteReview(@PathVariable int id) {
         reviewService.delete(id);
     }
 
-    @GetMapping ("/{id}")
+    @GetMapping("/{id}")
     public Review getById(@PathVariable int id) {
         return reviewService.getById(id);
     }
 
     @GetMapping
-    public List<Review> getList(@RequestParam(defaultValue = "0") @Positive int filmId,
-                                @RequestParam(defaultValue = "10") int count) {
+    public List<Review> getList(@RequestParam(required = false) @Positive Integer filmId,
+                                @RequestParam(defaultValue = "10") @Positive int count) {
         return reviewService.getList(filmId, count);
     }
 

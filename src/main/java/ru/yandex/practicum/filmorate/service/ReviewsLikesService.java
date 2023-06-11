@@ -7,14 +7,12 @@ import ru.yandex.practicum.filmorate.model.NotFoundInDB;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.reviewsLikes.ReviewsLikesStorage;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 public class ReviewsLikesService {
     private final ReviewsLikesStorage reviewsLikesStorage;
     private final UserService userService;
-  private final ReviewStorage reviewStorage;
+    private final ReviewStorage reviewStorage;
 
     public ReviewsLikesService(@Qualifier("DB") ReviewsLikesStorage reviewsLikesStorage, UserService userService, FilmService filmService, @Qualifier("DB") ReviewStorage reviewStorage) {
         this.reviewsLikesStorage = reviewsLikesStorage;
@@ -23,50 +21,50 @@ public class ReviewsLikesService {
     }
 
     public void addLike(int reviewId, int userId) {
-        checkReviewUserID(reviewId,userId);
-        Optional<Integer> isLikeDislikeExist = reviewsLikesStorage.isLikeDislikeExist(reviewId,userId);
-        if (isLikeDislikeExist.isEmpty()) {
+        checkReviewUserID(reviewId, userId);
+        int isLikeDislikeExist = reviewsLikesStorage.isLikeDislikeExist(reviewId, userId);
+        if (isLikeDislikeExist == 0) {
             reviewsLikesStorage.addLike(reviewId, userId);
-        } else if (isLikeDislikeExist.get()==1) {
+        } else if (isLikeDislikeExist == 1) {
             log.info("Уже есть лайк даному отзыву");
-        } else if (isLikeDislikeExist.get()==-1) {
+        } else if (isLikeDislikeExist == -1) {
             reviewsLikesStorage.deleteDislike(reviewId, userId);
         }
     }
 
-    public void addDislike (int reviewId, int userId){
-        checkReviewUserID(reviewId,userId);
-        Optional<Integer> isLikeDislikeExist = reviewsLikesStorage.isLikeDislikeExist(reviewId,userId);
-        if (isLikeDislikeExist.isEmpty()) {
+    public void addDislike(int reviewId, int userId) {
+        checkReviewUserID(reviewId, userId);
+        int isLikeDislikeExist = reviewsLikesStorage.isLikeDislikeExist(reviewId, userId);
+        if (isLikeDislikeExist == 0) {
             reviewsLikesStorage.addDislike(reviewId, userId);
-        } else if (isLikeDislikeExist.get()==-1) {
+        } else if (isLikeDislikeExist == -1) {
             log.debug("Уже есть дизлайк даному отзыву");
-        } else if (isLikeDislikeExist.get()==1) {
+        } else if (isLikeDislikeExist == 1) {
             reviewsLikesStorage.deleteLike(reviewId, userId);
         }
     }
 
-    public void deleteLike(int reviewId, int userId){
-        checkReviewUserID(reviewId,userId);
-        Optional<Integer> isLikeDislikeExist = reviewsLikesStorage.isLikeDislikeExist(reviewId,userId);
-        if(isLikeDislikeExist.isPresent()&&isLikeDislikeExist.get()==1) {
-            reviewsLikesStorage.deleteLike(reviewId, userId);
-        } else {
-            throw new NotFoundInDB("Объект для удаления не найден");
-        }
-    }
-
-    public void deleteDislike (int reviewId, int userId){
-        checkReviewUserID(reviewId,userId);
-        Optional<Integer> isLikeDislikeExist = reviewsLikesStorage.isLikeDislikeExist(reviewId,userId);
-        if(isLikeDislikeExist.isPresent()&&isLikeDislikeExist.get()==-1) {
+    public void deleteLike(int reviewId, int userId) {
+        checkReviewUserID(reviewId, userId);
+        int isLikeDislikeExist = reviewsLikesStorage.isLikeDislikeExist(reviewId, userId);
+        if (isLikeDislikeExist == 1) {
             reviewsLikesStorage.deleteLike(reviewId, userId);
         } else {
             throw new NotFoundInDB("Объект для удаления не найден");
         }
     }
 
-    private void checkReviewUserID (int reviewId, int userId) {
+    public void deleteDislike(int reviewId, int userId) {
+        checkReviewUserID(reviewId, userId);
+        int isLikeDislikeExist = reviewsLikesStorage.isLikeDislikeExist(reviewId, userId);
+        if (isLikeDislikeExist == -1) {
+            reviewsLikesStorage.deleteLike(reviewId, userId);
+        } else {
+            throw new NotFoundInDB("Объект для удаления не найден");
+        }
+    }
+
+    private void checkReviewUserID(int reviewId, int userId) {
         userService.checkId(userId);
         reviewStorage.containsReview(reviewId);
     }

@@ -95,20 +95,23 @@ public class DbReviewStorage implements ReviewStorage {
     }
 
     @Override
-    public List<Review> getList(int filmId, int amount) {
+    public List<Review> getList(Integer filmId, int amount) {
         String sql;
         List<Review> reviews = new ArrayList<>();
-        if (filmId == 0) {
+        if (filmId == null) {
             sql = "SELECT r.review_id AS id, " +
                     "r.content AS content, " +
                     "r.is_positive AS is_positive, " +
                     "r.user_id AS user_id, " +
                     "r.film_id AS film_id, " +
-                    "SUM(like_or_dislike) AS useful " +
+                    "CASE " +
+                    "WHEN like_or_dislike is null THEN 0 " +
+                    "ELSE SUM(like_or_dislike) " +
+                    "END AS useful " +
                     "FROM reviews r LEFT JOIN reviews_likes l on " +
                     "r.review_id=l.review_id " +
                     "GROUP BY r.review_id, r.content, r.is_positive, r.user_id, r.film_id " +
-                    "ORDER BY SUM(like_or_dislike) " +
+                    "ORDER BY useful DESC " +
                     "LIMIT ?";
             reviews = jdbcTemplate.query(sql, this::mapReview, amount);
         } else {
@@ -117,12 +120,15 @@ public class DbReviewStorage implements ReviewStorage {
                     "r.is_positive AS is_positive, " +
                     "r.user_id AS user_id, " +
                     "r.film_id AS film_id," +
-                    "SUM(like_or_dislike) AS useful " +
+                    "CASE " +
+                    "WHEN like_or_dislike is null THEN 0 " +
+                    "ELSE SUM(like_or_dislike) " +
+                    "END AS useful " +
                     "FROM reviews r LEFT JOIN reviews_likes l on " +
                     "r.review_id=l.review_id " +
                     "WHERE r.film_id = ?" +
                     "GROUP BY r.review_id, r.content, r.is_positive, r.user_id, r.film_id " +
-                    "ORDER BY SUM(like_or_dislike) " +
+                    "ORDER BY useful DESC " +
                     "LIMIT ?";
             reviews = jdbcTemplate.query(sql, this::mapReview, filmId, amount);
         }
@@ -132,8 +138,8 @@ public class DbReviewStorage implements ReviewStorage {
 
     @Override
     public void containsReview(int id) {
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(review_id) FROM reviews WHERE review_id=? GROUP BY review_id", Integer.class, id);
-        if (count != 1) {
+        Integer rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reviews WHERE review_id=?", Integer.class, id);
+        if (rowCount == null) {
             throw new NotFoundInDB("Отзыва с id=" + id + " не существует");
         }
     }

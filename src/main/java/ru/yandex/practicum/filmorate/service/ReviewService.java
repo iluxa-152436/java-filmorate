@@ -22,13 +22,13 @@ public class ReviewService {
     }
 
     public Review add(Review review) {
-        userService.checkIdAndThrowBadRequest(review.getUserId());
-        filmService.checkIdAndThrowBadRequest(review.getFilmId());
+        userService.checkId(review.getUserId());
+        filmService.checkId(review.getFilmId());
         return reviewStorage.add(review);
     }
 
     public Review update(Review review) {
-        return  reviewStorage.update(review);
+        return reviewStorage.update(review);
     }
 
     public void delete(int id) {
@@ -39,7 +39,7 @@ public class ReviewService {
         return reviewStorage.getById(id);
     }
 
-    public List<Review> getList(int filmId, int count) {
+    public List<Review> getList(Integer filmId, int count) {
         return reviewStorage.getList(filmId, count);
     }
 }
