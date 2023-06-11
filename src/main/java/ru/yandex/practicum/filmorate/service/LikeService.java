@@ -41,7 +41,7 @@ public class LikeService {
                 limit,
                 genreId,
                 releaseDate);
-        Map<Integer, Integer> sortedIds;
+        List<Integer> sortedIds;
         if (genreId != null && releaseDate != null) {
 
             sortedIds = likeStorage.getSortedFilmLikes(limit, genreId, releaseDate);
@@ -53,7 +53,7 @@ public class LikeService {
             sortedIds = likeStorage.getSortedFilmLikes(limit, releaseDate);
         }
         List<Film> sortedFilms = new ArrayList<>();
-        for (Integer filmId : sortedIds.keySet()) {
+        for (Integer filmId : sortedIds) {
             sortedFilms.add(filmService.getFilm(filmId));
         }
         return sortedFilms;
