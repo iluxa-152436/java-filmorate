@@ -335,7 +335,7 @@ class FilmControllerTest {
                 .isPresent()
                 .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
     }
-  
+
     @Test
     void getPopularFilmsFilterByYear() {
         Film film1 = prepareFilmObjWithGenreAndYear();
