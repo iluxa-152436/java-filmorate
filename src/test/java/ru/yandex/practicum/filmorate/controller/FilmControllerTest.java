@@ -317,11 +317,11 @@ class FilmControllerTest {
 
     @Test
     void deleteFilmById() {
-        Film film1 = getFilmObj();
+        Film film1 = prepareFilmObj();
         filmService.createFilm(film1);
-        Film film2 = getFilmObj();
+        Film film2 = prepareFilmObj();
         filmService.createFilm(film2);
-        Film film3 = getFilmObj();
+        Film film3 = prepareFilmObj();
         filmService.createFilm(film3);
 
         Optional<Integer> filmsOptionalSize = Optional.of(filmService.getFilms().size());
