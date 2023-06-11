@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
