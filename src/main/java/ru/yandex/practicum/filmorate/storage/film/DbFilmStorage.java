@@ -181,7 +181,8 @@ public class DbFilmStorage implements FilmStorage {
                 } else {
                     mpa = null;
                 }
-                film = new Film(id, name, description, releaseDate, duration, genres, mpa);
+                film = new Film(id, name, description, releaseDate, duration, genres, mpa, null);
+                //TODO доделать выборку списка режжиссеров и их маппинг
 
                 //сохраняем фильм в список результата
                 films.put(film.getId(), film);
