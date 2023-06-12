@@ -85,4 +85,8 @@ public class FilmService {
         checkId(filmId);
         return storage.getFilm(filmId);
     }
+
+    public void deleteFilmById(int filmId) {
+        storage.deleteFilmById(filmId);
+    }
 }

@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.validator.ReleaseDateConstraint;
 
 import javax.validation.constraints.NotBlank;
@@ -15,10 +17,7 @@ import java.util.Set;
 import static ru.yandex.practicum.filmorate.Constants.MAX_FILM_DESCRIPTION_LENGTH;
 
 @NoArgsConstructor
-@EqualsAndHashCode
-@Setter
-@Getter
-@ToString
+@Data
 public class Film {
     private int id;
     @NotBlank(message = "name cannot be empty")
@@ -45,13 +44,15 @@ public class Film {
                 LocalDate releaseDate,
                 int duration,
                 Set<Genre> genres,
-                MpaRating mpa) {
+                MpaRating mpa,
+                Set<Director> directors) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.genres = Objects.requireNonNullElseGet(genres, HashSet::new);
+        this.directors = Objects.requireNonNullElseGet(directors, HashSet::new);
         this.mpa = mpa;
     }
 
@@ -65,8 +66,7 @@ public class Film {
                 MpaRating mpa,
                 Set<Director> directors,
                 Set<Integer> likes) {
-        this(id, name, description, releaseDate, duration, genres, mpa);
-        this.directors = Objects.requireNonNullElseGet(directors, HashSet::new);
+        this(id, name, description, releaseDate, duration, genres, mpa, directors);
         this.likes = Objects.requireNonNullElseGet(likes, HashSet::new);
     }
 }

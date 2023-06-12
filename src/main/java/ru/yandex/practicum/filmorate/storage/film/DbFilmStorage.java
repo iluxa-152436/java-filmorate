@@ -8,6 +8,9 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.exception.FindFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
@@ -78,6 +81,7 @@ public class DbFilmStorage implements FilmStorage {
                     null,
                     film.getId());
         }
+
         deleteFilmGenre(film);
         if (film.getGenres() != null) {
             saveFilmGenre(film);
@@ -181,6 +185,14 @@ public class DbFilmStorage implements FilmStorage {
     public int getNextId() {
         return jdbcTemplate.query("select count(film_id), max(film_id), from films",
                 (rs, rowNum) -> makeNextId(rs)).get(0);
+    }
+
+    @Override
+    public void deleteFilmById(int filmId) {
+        String sqlQuery = "DELETE FROM films WHERE film_id = ?";
+        if (jdbcTemplate.update(sqlQuery, filmId) == 0) {
+            throw new FindFilmException("Film с id = " + filmId + " не найден, удаление невозможно.");
+        }
     }
 
     private Integer makeNextId(ResultSet rs) throws SQLException {
