@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.review;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -10,8 +11,11 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.NotFoundInDB;
 import ru.yandex.practicum.filmorate.model.Review;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +41,9 @@ public class DbReviewStorage implements ReviewStorage {
                 .addValue("film_id", review.getFilmId())
                 .addValue("user_id", review.getUserId());
         int id = simpleJdbcInsert.executeAndReturnKey(params).intValue();
-        return getById(id);
+        addReviewToFeed(review.getUserId(), id);
+        review.setId(id);
+        return review;
     }
 
     @Override
@@ -51,6 +57,7 @@ public class DbReviewStorage implements ReviewStorage {
         if (result == 0) {
             throw new NotFoundInDB("Объекты для обновления не найдены");
         }
+        updateReviewToFeed(review.getId());
         return getById(review.getId());
     }
 
@@ -58,10 +65,30 @@ public class DbReviewStorage implements ReviewStorage {
     public void delete(int id) {
         String sql = "DELETE FROM reviews " +
                 "WHERE review_id=?";
+        Review review = getById(id);
         int result = jdbcTemplate.update(sql, id);
         if (result == 0) {
             throw new NotFoundInDB("Объекты для удаления не найдены");
         }
+        deleteReviewToFeed(review.getUserId(), review.getId());
+    }
+
+    private void addReviewToFeed(int userId, int reviewId) {
+        String sqlQuery = "INSERT INTO feed(user_id, time_stamp, entity_id," +
+                " event_type, operation) VALUES(?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sqlQuery, userId, Date.from(Instant.now()), reviewId, "REVIEW", "ADD");
+    }
+
+    private void deleteReviewToFeed(int userId, int reviewId) {
+        String sqlQuery = "INSERT INTO feed(user_id, time_stamp, entity_id," +
+                " event_type, operation) VALUES(?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sqlQuery, userId, Date.from(Instant.now()), reviewId, "REVIEW", "REMOVE");
+    }
+
+    private void updateReviewToFeed(int reviewId) {
+        String sqlQuery = "INSERT INTO feed(user_id, time_stamp, entity_id," +
+                " event_type, operation) VALUES(?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sqlQuery, getById(reviewId).getUserId(), Date.from(Instant.now()), reviewId, "REVIEW", "UPDATE");
     }
 
     @Override
@@ -76,11 +103,11 @@ public class DbReviewStorage implements ReviewStorage {
                 "r.review_id=l.review_id " +
                 "WHERE r.review_id = ? " +
                 "GROUP BY r.review_id, r.content, r.is_positive, r.user_id, r.film_id";
-        Review review = jdbcTemplate.queryForObject(sqlQuery, this::mapReview, id);
-        if (review == null) {
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, this::mapReview, id);
+        } catch (DataAccessException e) {
             throw new NotFoundInDB("Нет отзыва с таким id");
         }
-        return review;
     }
 
     private Review mapReview(ResultSet resultSet, int rowNum) throws SQLException {

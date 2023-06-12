@@ -7,6 +7,9 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Like;
 
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,13 +64,17 @@ public class DbLikeStorage implements LikeStorage {
     @Override
     public void saveLike(Like like) {
         String sql = "insert into likes(user_id, film_id) values(?,?)";
-        jdbcTemplate.update(sql, like.getUserId(), like.getFilmId());
+        if (jdbcTemplate.update(sql, like.getUserId(), like.getFilmId()) != 0) {
+            addLikeToFeed(like.getUserId(), like.getFilmId());
+        }
     }
 
     @Override
     public void deleteLike(Like like) {
         String sql = "delete from likes where user_id=? and film_id=?";
-        jdbcTemplate.update(sql, like.getUserId(), like.getFilmId());
+        if (jdbcTemplate.update(sql, like.getUserId(), like.getFilmId()) != 0) {
+            deleteLikeToFeed(like.getUserId(), like.getFilmId());
+        }
     }
 
     @Override
@@ -79,6 +86,18 @@ public class DbLikeStorage implements LikeStorage {
                 "limit ?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, limit);
         return makeFilmLikesList(rowSet);
+    }
+
+    private void addLikeToFeed(int userId, int filmId) {
+        String sqlQuery = "INSERT INTO feed(user_id, time_stamp, entity_id," +
+                " event_type, operation) VALUES(?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sqlQuery, userId, Date.from(Instant.now()), filmId, "LIKE", "ADD");
+    }
+
+    private void deleteLikeToFeed(int userId, int filmId) {
+        String sqlQuery = "INSERT INTO feed(user_id, time_stamp, entity_id," +
+                " event_type, operation) VALUES(?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sqlQuery, userId, Date.from(Instant.now()), filmId, "LIKE", "REMOVE");
     }
 
     private List<Integer> makeFilmLikesList(SqlRowSet rowSet) {
