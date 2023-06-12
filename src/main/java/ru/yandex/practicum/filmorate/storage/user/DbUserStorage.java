@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.FindUserException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
@@ -80,6 +81,14 @@ public class DbUserStorage implements UserStorage {
     public int getNexId() {
         return jdbcTemplate.query("select count(user_id), max(user_id), from app_users",
                 (rs, rowNum) -> makeNextId(rs)).get(0);
+    }
+
+    @Override
+    public void deleteUserById(int userId) {
+        String sqlQuery = "DELETE FROM app_users WHERE user_id = ?";
+        if (jdbcTemplate.update(sqlQuery, userId) == 0) {
+            throw new FindUserException("User с id = " + userId + " не найден, удаление невозможно.");
+        }
     }
 
     private Integer makeNextId(ResultSet rs) throws SQLException {

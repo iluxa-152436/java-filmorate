@@ -64,14 +64,21 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive long count) {
-        log.debug("Requested {} most popular films", count);
-        return likeService.getSortedFilms(count);
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive long count,
+                                      @RequestParam(required = false) @Positive Integer genreId,
+                                      @RequestParam(required = false) String year) {
+        return likeService.getSortedFilms(count, genreId, year);
+    }
+
+    @DeleteMapping("/{filmId}")
+    public void deleteFilmById(@PathVariable int filmId) {
+        log.debug("Received values filmId = {}", filmId);
+        filmService.deleteFilmById(filmId);
     }
 
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmsOfDirectorById(@PathVariable Integer directorId, @RequestParam String sortBy) {
-        switch (sortBy) {
+        switch(sortBy) {
             case "year":
             case "likes":
                 log.debug("Requested films of director with id = {}, sort by {}", directorId, sortBy);
