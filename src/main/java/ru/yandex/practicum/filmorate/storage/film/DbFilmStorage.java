@@ -129,6 +129,7 @@ public class DbFilmStorage implements FilmStorage {
         String sqlQuery = "select count(*) from directors where director_id=?";
         return jdbcTemplate.queryForObject(sqlQuery, Integer.class, id) == 1;
     }
+
     @Override
     public List<Film> getFilms() {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet("select f.film_id as film_id, " +
