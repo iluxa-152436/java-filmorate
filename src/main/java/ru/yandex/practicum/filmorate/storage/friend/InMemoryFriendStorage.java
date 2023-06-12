@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.friend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
 
 import java.util.HashSet;
 import java.util.Map;
