@@ -319,12 +319,11 @@ class FilmControllerTest {
     void getFilmsOfDirectorById() {
         Director director = new Director(1, "Dir");
         directorService.createDirector(director);
-        Film film = new Film(1, "Name", "Des", LocalDate.of(2000, 5, 10),
+        Film film = new Film(1, "Name", "Des", LocalDate.of(2010, 5, 10),
                 150, null, new MpaRating(1, "G"), Set.of(director), Set.of(2));
         film.setDirectors(Set.of(director));
         Film film2 = new Film(2, "Name2", "Descr", LocalDate.of(2000, 5, 10),
                 150, null, new MpaRating(1, "G"), Set.of(director), Set.of(2));
-        directorService.createDirector(director);
         filmService.createFilm(film);
         filmService.createFilm(film2);
 
