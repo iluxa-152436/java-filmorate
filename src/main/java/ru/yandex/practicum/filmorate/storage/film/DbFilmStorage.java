@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
@@ -47,7 +49,12 @@ public class DbFilmStorage implements FilmStorage {
                     film.getDuration(),
                     null);
         }
-        saveFilmGenre(film);
+        if (film.getGenres() != null) {
+            saveFilmGenre(film);
+        }
+        if (film.getDirectors() != null) {
+            saveFilmDirector(film);
+        }
     }
 
     @Override
@@ -71,9 +78,14 @@ public class DbFilmStorage implements FilmStorage {
                     null,
                     film.getId());
         }
-
         deleteFilmGenre(film);
-        saveFilmGenre(film);
+        if (film.getGenres() != null) {
+            saveFilmGenre(film);
+        }
+        deleteFilmDirector(film);
+        if (film.getDirectors() != null) {
+            saveFilmDirector(film);
+        }
     }
 
     private void deleteFilmGenre(Film film) {
@@ -91,21 +103,48 @@ public class DbFilmStorage implements FilmStorage {
         }
     }
 
+    private void deleteFilmDirector(Film film) {
+        String sqlRemoveFilmDirector = "delete from film_director where film_id=?";
+        jdbcTemplate.update(sqlRemoveFilmDirector, film.getId());
+    }
+
+    private void saveFilmDirector(Film film) {
+        if (!film.getDirectors().isEmpty()) {
+            String sqlFilmDirector = "insert into film_director (film_id, director_id) values(?,?)";
+            for (Director director : film.getDirectors()) {
+                if (isContainsDirector(director.getId())) {
+                    jdbcTemplate.update(sqlFilmDirector, film.getId(), director.getId());
+                } else {
+                    throw new DirectorNotFoundException("Director with id = " + director.getId() + " not found");
+                }
+            }
+        }
+    }
+
+    private boolean isContainsDirector(Integer id) {
+        String sqlQuery = "select count(*) from directors where director_id=?";
+        return jdbcTemplate.queryForObject(sqlQuery, Integer.class, id) == 1;
+    }
     @Override
     public List<Film> getFilms() {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet("select f.film_id as film_id, " +
-                "f.name as filmname, " +
+                "f.name as film_name, " +
                 "f.release_date as release_date, " +
                 "f.description as description, " +
                 "f.duration as duration, " +
                 "f.mpa_rating_id as mpa_rating_id, " +
-                "g.name as name, " +
+                "m.name as mpa_name, " +
                 "g.genre_id as genre_id, " +
-                "m.name as mpa_rating_name " +
+                "g.name as genre_name, " +
+                "d.director_id as director_id, " +
+                "d.name as director_name " +
                 "from films as f " +
                 "left join film_genre as fg on f.film_id = fg.film_id " +
                 "left join genres as g on fg.genre_id = g.genre_id " +
-                "left join mpa_ratings m on f.mpa_rating_id = m.mpa_rating_id");
+                "left join mpa_ratings as m on f.mpa_rating_id = m.mpa_rating_id " +
+                "left join film_director as fd on f.film_id = fd.film_id " +
+                "left join directors as d on fd.director_id = d.director_id " +
+                "order by genre_id, director_id");
         return makeFilmList(rowSet);
     }
 
@@ -117,18 +156,22 @@ public class DbFilmStorage implements FilmStorage {
     @Override
     public Film getFilm(int filmId) {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet("select f.film_id as film_id, " +
-                "f.name as filmname, " +
+                "f.name as film_name, " +
                 "f.release_date as release_date, " +
                 "f.description as description, " +
                 "f.duration as duration, " +
                 "f.mpa_rating_id as mpa_rating_id, " +
-                "g.name as name, " +
+                "m.name as mpa_name, " +
                 "g.genre_id as genre_id, " +
-                "m.name as mpa_rating_name " +
+                "g.name as genre_name, " +
+                "d.director_id as director_id, " +
+                "d.name as director_name " +
                 "from films as f " +
                 "left join film_genre as fg on f.film_id = fg.film_id " +
                 "left join genres as g on fg.genre_id = g.genre_id " +
-                "left join mpa_ratings m on f.mpa_rating_id = m.mpa_rating_id " +
+                "left join mpa_ratings as m on f.mpa_rating_id = m.mpa_rating_id " +
+                "left join film_director as fd on f.film_id = fd.film_id " +
+                "left join directors as d on fd.director_id = d.director_id " +
                 "where f.film_id=? " +
                 "order by film_id, genre_id", filmId);
         return makeFilmList(rowSet).get(0);
@@ -141,7 +184,7 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     private Integer makeNextId(ResultSet rs) throws SQLException {
-        Integer nextId = 1;
+        int nextId = 1;
         if (rs.getInt(1) >= 1) {
             nextId = rs.getInt(2) + 1;
         }
@@ -153,16 +196,17 @@ public class DbFilmStorage implements FilmStorage {
 
         while (rowSet.next()) {
             //получить все значения из строки
-            Integer id = rowSet.getInt("film_id");
-            String description = rowSet.getString("description");
-            Integer duration = rowSet.getInt("duration");
-            LocalDate releaseDate = rowSet.getDate("release_date").toLocalDate();
-            Integer mpaId = rowSet.getInt("mpa_rating_id");
-            Integer genreId = rowSet.getInt("genre_id");
-            String genreName = rowSet.getString(7);
+            int id = rowSet.getInt(1);
             String name = rowSet.getString(2);
-            String mpaName = rowSet.getString(9);
-
+            LocalDate releaseDate = rowSet.getDate(3).toLocalDate();
+            String description = rowSet.getString(4);
+            int duration = rowSet.getInt(5);
+            int mpaId = rowSet.getInt(6);
+            String mpaName = rowSet.getString(7);
+            int genreId = rowSet.getInt(8);
+            String genreName = rowSet.getString(9);
+            int directorId = rowSet.getInt(10);
+            String directorName = rowSet.getString(11);
             //определяем был ли такой фильм в списке результата
             Film film = films.get(id);
             if (film == null) {
@@ -181,13 +225,26 @@ public class DbFilmStorage implements FilmStorage {
                 } else {
                     mpa = null;
                 }
-                film = new Film(id, name, description, releaseDate, duration, genres, mpa);
+
+                Set<Director> directors;
+                if (directorId != 0) {
+                    directors = new HashSet<>();
+                    directors.add(new Director(directorId, directorName));
+                } else {
+                    directors = Collections.emptySet();
+                }
+                film = new Film(id, name, description, releaseDate, duration, genres, mpa, directors, null);
 
                 //сохраняем фильм в список результата
                 films.put(film.getId(), film);
             } else {
                 //к существующему фильму добавляем еще один жанр
-                film.getGenres().add(new Genre(genreId, genreName));
+                if (genreId != 0) {
+                    film.getGenres().add(new Genre(genreId, genreName));
+                }
+                if (directorId != 0) {
+                    film.getDirectors().add(new Director(directorId, directorName));
+                }
             }
         }
         return List.copyOf(films.values());

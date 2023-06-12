@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static ru.yandex.practicum.filmorate.Constants.MAX_FILM_DESCRIPTION_LENGTH;
 
-
+@NoArgsConstructor
 @EqualsAndHashCode
 @Setter
 @Getter
@@ -34,6 +34,10 @@ public class Film {
     private int duration;
     private Set<Genre> genres;
     private MpaRating mpa;
+    @EqualsAndHashCode.Exclude
+    private Set<Director> directors;
+    @EqualsAndHashCode.Exclude
+    private Set<Integer> likes = new HashSet<>();
 
     public Film(int id,
                 String name,
@@ -47,9 +51,22 @@ public class Film {
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-
         this.genres = Objects.requireNonNullElseGet(genres, HashSet::new);
-
         this.mpa = mpa;
+    }
+
+
+    public Film(int id,
+                String name,
+                String description,
+                LocalDate releaseDate,
+                int duration,
+                Set<Genre> genres,
+                MpaRating mpa,
+                Set<Director> directors,
+                Set<Integer> likes) {
+        this(id, name, description, releaseDate, duration, genres, mpa);
+        this.directors = Objects.requireNonNullElseGet(directors, HashSet::new);
+        this.likes = Objects.requireNonNullElseGet(likes, HashSet::new);
     }
 }

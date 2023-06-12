@@ -38,8 +38,10 @@ public class FilmService {
     private void fillInGenres(Film film) {
         log.debug("Film {} fill in genres previous value = {}", film.getId(), film.getGenres());
         Set<Genre> genres = new HashSet<>();
-        for (Genre genre : film.getGenres()) {
-            genres.add(genreService.getGenre(genre.getId()));
+        if (film.getGenres() != null) {
+            for (Genre genre : film.getGenres()) {
+                genres.add(genreService.getGenre(genre.getId()));
+            }
         }
         film.setGenres(genres);
         log.debug("New value = {}", film.getGenres());
