@@ -303,4 +303,25 @@ class UserControllerTest {
                 .isPresent()
                 .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
     }
+
+    @Test
+    void getFeedsByUserIdShouldReturnFeed() {
+        User user1 = getUser();
+        userService.createUser(user1);
+        User user2 = getUser();
+        userService.createUser(user2);
+
+        friendService.addFriend(1, 2);
+
+        Optional<Integer> optionalFeedsSize = Optional.of(userService.getFeedsByUserId(1).size());
+        assertThat(optionalFeedsSize).isPresent()
+                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(1));
+
+        friendService.deleteFriend(1, 2);
+
+        optionalFeedsSize = Optional.of(userService.getFeedsByUserId(1).size());
+        assertThat(optionalFeedsSize).isPresent()
+                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
+
+    }
 }
