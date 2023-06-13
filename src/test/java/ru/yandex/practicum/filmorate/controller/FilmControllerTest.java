@@ -422,7 +422,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void deleteFilmByIdShouldDeleteFilmFromDB() {
+    void deleteFilmByIdShouldDeleteFilm() {
         Film film1 = prepareFilmObj();
         filmService.createFilm(film1);
         Film film2 = prepareFilmObj();

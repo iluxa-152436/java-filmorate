@@ -102,31 +102,31 @@ public class DbUserStorage implements UserStorage {
         }
     }
 
-        private Feed makeFeed (ResultSet rs,int rowNum) throws SQLException {
-            return Feed.builder()
-                    .eventId(rs.getInt("event_id"))
-                    .userId(rs.getInt("user_id"))
-                    .entityId(rs.getInt("entity_id"))
-                    .operation(rs.getString("operation"))
-                    .eventType(rs.getString("event_type"))
-                    .timestamp(rs.getTimestamp("time_stamp"))
-                    .build();
-        }
-
-        private Integer makeNextId (ResultSet rs) throws SQLException {
-            Integer nextId = 1;
-            if (rs.getInt(1) >= 1) {
-                nextId = rs.getInt(2) + 1;
-            }
-            return nextId;
-        }
-
-        private User makeUser (ResultSet rs) throws SQLException {
-            Integer id = rs.getInt("user_id");
-            String email = rs.getString("email");
-            String login = rs.getString("login");
-            String name = rs.getString("name");
-            LocalDate birthday = rs.getDate("birthday").toLocalDate();
-            return new User(id, email, login, name, birthday);
-        }
+    private Feed makeFeed(ResultSet rs, int rowNum) throws SQLException {
+        return Feed.builder()
+                .eventId(rs.getInt("event_id"))
+                .userId(rs.getInt("user_id"))
+                .entityId(rs.getInt("entity_id"))
+                .operation(rs.getString("operation"))
+                .eventType(rs.getString("event_type"))
+                .timestamp(rs.getTimestamp("time_stamp"))
+                .build();
     }
+
+    private Integer makeNextId(ResultSet rs) throws SQLException {
+        Integer nextId = 1;
+        if (rs.getInt(1) >= 1) {
+            nextId = rs.getInt(2) + 1;
+        }
+        return nextId;
+    }
+
+    private User makeUser(ResultSet rs) throws SQLException {
+        Integer id = rs.getInt("user_id");
+        String email = rs.getString("email");
+        String login = rs.getString("login");
+        String name = rs.getString("name");
+        LocalDate birthday = rs.getDate("birthday").toLocalDate();
+        return new User(id, email, login, name, birthday);
+    }
+}
