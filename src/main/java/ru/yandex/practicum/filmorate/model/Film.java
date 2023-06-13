@@ -19,6 +19,7 @@ import static ru.yandex.practicum.filmorate.Constants.MAX_FILM_DESCRIPTION_LENGT
 @Setter
 @Getter
 @ToString
+@NoArgsConstructor
 public class Film {
     private int id;
     @NotBlank(message = "name cannot be empty")

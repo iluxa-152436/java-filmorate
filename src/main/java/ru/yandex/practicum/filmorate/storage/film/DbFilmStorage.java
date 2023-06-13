@@ -82,8 +82,8 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     private void saveFilmGenre(Film film) {
-        log.debug("Film contains genres: {}", film.getGenres().toString());
-        if (!film.getGenres().isEmpty()) {
+        log.debug("Film contains genres: {}", film.getGenres());
+        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             String sqlFilmGenre = "insert into film_genre(film_id, genre_id) values(?,?)";
             for (Genre genre : film.getGenres()) {
                 jdbcTemplate.update(sqlFilmGenre, film.getId(), genre.getId());
@@ -153,16 +153,15 @@ public class DbFilmStorage implements FilmStorage {
 
         while (rowSet.next()) {
             //получить все значения из строки
-            Integer id = rowSet.getInt("film_id");
-            String description = rowSet.getString("description");
-            Integer duration = rowSet.getInt("duration");
-            LocalDate releaseDate = rowSet.getDate("release_date").toLocalDate();
-            Integer mpaId = rowSet.getInt("mpa_rating_id");
-            Integer genreId = rowSet.getInt("genre_id");
-            String genreName = rowSet.getString(7);
+            Integer id = rowSet.getInt(1);
             String name = rowSet.getString(2);
+            LocalDate releaseDate = rowSet.getDate(3).toLocalDate();
+            String description = rowSet.getString(4);
+            Integer duration = rowSet.getInt(5);
+            Integer mpaId = rowSet.getInt(6);
+            String genreName = rowSet.getString(7);
+            Integer genreId = rowSet.getInt(8);
             String mpaName = rowSet.getString(9);
-
             //определяем был ли такой фильм в списке результата
             Film film = films.get(id);
             if (film == null) {
@@ -192,4 +191,37 @@ public class DbFilmStorage implements FilmStorage {
         }
         return List.copyOf(films.values());
     }
+
+    @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        String sqlQuery = "  \n" +
+                "                                SELECT    \n" +
+                "                                f.film_id as film_id,  \n" +
+                "                                f.name as film_name,  \n" +
+                "                                f.release_date as release_date,  \n" +
+                "                                f.description as description,  \n" +
+                "                                f.duration as duration,  \n" +
+                "                                f.mpa_rating_id as mpa_rating_id \n" +
+                "                                , g.name as genre_name \n" +
+                "                                ,fg.genre_id as genre_id \n" +
+                "                                ,m.name as mpa_rating_name \n" +
+                "                                FROM likes u1 JOIN likes u2    \n" +
+                "                                    ON u1.film_id=u2.film_id    \n" +
+                "                                JOIN (SELECT film_id, COUNT(DISTINCT user_id) AS c   \n" +
+                "                                    FROM likes GROUP BY film_id) as f_count   \n" +
+                "                                   ON u1.film_id=f_count.film_id    \n" +
+                "                                     JOIN films f   \n" +
+                "                                     ON u1.film_id=f.film_id   \n" +
+                "                                       JOIN mpa_ratings m ON f.mpa_rating_id = m.mpa_rating_id   \n" +
+                "                                    LEFT JOIN FILM_GENRE fg ON fg.FILM_ID  = f.FILM_ID  \n" +
+                "                                    LEFT JOIN GENRES g ON fg.GENRE_ID = g.GENRE_ID  \n" +
+                "                                                WHERE     \n" +
+                "                                                  (u1.user_id = ? \n" +
+                "                                                  OR u2.user_id = ?) ";
+
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
+
+        return makeFilmList(sqlRowSet);
+    }
 }
+

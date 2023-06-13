@@ -36,13 +36,19 @@ public class FilmService {
     }
 
     private void fillInGenres(Film film) {
-        log.debug("Film {} fill in genres previous value = {}", film.getId(), film.getGenres());
-        Set<Genre> genres = new HashSet<>();
-        for (Genre genre : film.getGenres()) {
-            genres.add(genreService.getGenre(genre.getId()));
+        try {
+            log.debug("Film {} fill in genres previous value = {}", film.getId(), film.getGenres());
+            Set<Genre> genres = new HashSet<>();
+            for (Genre genre : film.getGenres()) {
+                System.out.println("Inside cycle");
+                genres.add(genreService.getGenre(genre.getId()));
+            }
+            film.setGenres(genres);
+            log.debug("New value = {}", film.getGenres());
+        } catch (Exception ex) {
+            System.out.println(ex.getLocalizedMessage());
+            ex.printStackTrace();
         }
-        film.setGenres(genres);
-        log.debug("New value = {}", film.getGenres());
     }
 
 
@@ -82,5 +88,12 @@ public class FilmService {
     public Film getFilm(int filmId) {
         checkId(filmId);
         return storage.getFilm(filmId);
+    }
+
+    public List<Film> getCommonFilms(String userId, String friendId) {
+        System.out.println("userId = " + userId);
+        System.out.println("friendId = " + friendId);
+        return storage.getCommonFilms(Integer.parseInt(userId),
+                Integer.parseInt(friendId));
     }
 }

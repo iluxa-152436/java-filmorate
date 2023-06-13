@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS film_genre (
 CREATE TABLE IF NOT EXISTS likes (
   user_id INTEGER REFERENCES app_users (user_id),
   film_id INTEGER REFERENCES films (film_id),
-  CONSTRAINT pk_likes PRIMARY KEY (user_id, film_id)
+ CONSTRAINT pk_likes PRIMARY KEY (user_id, film_id)
 );
 
 CREATE TABLE IF NOT EXISTS friends (

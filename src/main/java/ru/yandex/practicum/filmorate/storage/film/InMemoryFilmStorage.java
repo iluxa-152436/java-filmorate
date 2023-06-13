@@ -53,4 +53,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public int getNextId() {
         return ++id;
     }
+
+    @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return List.of();
+    }
 }
