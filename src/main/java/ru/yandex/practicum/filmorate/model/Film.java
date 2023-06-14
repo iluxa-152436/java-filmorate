@@ -35,8 +35,6 @@ public class Film {
     private MpaRating mpa;
     @EqualsAndHashCode.Exclude
     private Set<Director> directors;
-    @EqualsAndHashCode.Exclude
-    private Set<Integer> likes = new HashSet<>();
 
     public Film(int id,
                 String name,
@@ -54,19 +52,5 @@ public class Film {
         this.genres = Objects.requireNonNullElseGet(genres, HashSet::new);
         this.directors = Objects.requireNonNullElseGet(directors, HashSet::new);
         this.mpa = mpa;
-    }
-
-
-    public Film(int id,
-                String name,
-                String description,
-                LocalDate releaseDate,
-                int duration,
-                Set<Genre> genres,
-                MpaRating mpa,
-                Set<Director> directors,
-                Set<Integer> likes) {
-        this(id, name, description, releaseDate, duration, genres, mpa, directors);
-        this.likes = Objects.requireNonNullElseGet(likes, HashSet::new);
     }
 }

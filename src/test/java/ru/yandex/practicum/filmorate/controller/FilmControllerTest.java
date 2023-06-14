@@ -225,7 +225,7 @@ class FilmControllerTest {
         return new Film(1,
                 "name",
                 "description",
-                LocalDate.of(1999, 04, 20),
+                LocalDate.of(1999, 4, 20),
                 30,
                 genres,
                 new MpaRating(1, "G"),
@@ -320,10 +320,13 @@ class FilmControllerTest {
         Director director = new Director(1, "Dir");
         directorService.createDirector(director);
         Film film = new Film(1, "Name", "Des", LocalDate.of(2010, 5, 10),
-                150, null, new MpaRating(1, "G"), Set.of(director), Set.of(2));
-        film.setDirectors(Set.of(director));
+                150, null, new MpaRating(1, "G"), Set.of(director));
+
+        restTemplate.put("http://localhost:" + port +
+                "/1/like/1", Integer.class);
+
         Film film2 = new Film(2, "Name2", "Descr", LocalDate.of(2000, 5, 10),
-                150, null, new MpaRating(1, "G"), Set.of(director), Set.of(2));
+                150, null, new MpaRating(1, "G"), Set.of(director));
         filmService.createFilm(film);
         filmService.createFilm(film2);
 
@@ -342,6 +345,7 @@ class FilmControllerTest {
         assertEquals(2, films2[1].getId());
     }
 
+    @Test
     void getPopularFilmsFilterByYear() {
         Film film1 = prepareFilmObjWithGenreAndYear();
         filmService.createFilm(film1);

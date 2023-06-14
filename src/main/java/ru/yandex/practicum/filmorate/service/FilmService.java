@@ -9,9 +9,11 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -20,11 +22,15 @@ public class FilmService {
     private final GenreService genreService;
     private final MpaRatingService mpaRatingService;
 
+    private final DirectorService directorService;
+
     @Autowired
-    public FilmService(@Qualifier("DB") FilmStorage storage, GenreService genreService, MpaRatingService mpaRatingService) {
+    public FilmService(@Qualifier("DB") FilmStorage storage, GenreService genreService,
+                       MpaRatingService mpaRatingService, DirectorService directorService) {
         this.storage = storage;
         this.genreService = genreService;
         this.mpaRatingService = mpaRatingService;
+        this.directorService = directorService;
     }
 
     public Film createFilm(Film film) {
@@ -88,5 +94,15 @@ public class FilmService {
 
     public void deleteFilmById(int filmId) {
         storage.deleteFilmById(filmId);
+    }
+
+    public List<Film> getFilmsOfDirectorById(Integer directorId, String sortBy) {
+        List<Film> films = directorService.getFilmsOfDirectorById(directorId);
+        if (sortBy.equals("year")) {
+            return films.stream().sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
+        }
+        return films.stream().sorted(Comparator.comparingInt((Film film) ->
+                        storage.getNumberOfLikesByFilmId(film.getId()))
+                .thenComparingInt(Film::getId)).collect(Collectors.toList());
     }
 }

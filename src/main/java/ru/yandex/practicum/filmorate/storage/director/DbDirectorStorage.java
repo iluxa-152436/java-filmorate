@@ -96,7 +96,6 @@ public class DbDirectorStorage implements DirectorStorage {
                     "m.name as mpa_name, " +
                     "g.genre_id as genre_id, " +
                     "g.name as genre_name, " +
-                    "l.user_id as user_id, " +
                     "d.director_id as director_id, " +
                     "d.name as director_name " +
                     "from films as f " +
@@ -105,7 +104,6 @@ public class DbDirectorStorage implements DirectorStorage {
                     "left join mpa_ratings as m on f.mpa_rating_id = m.mpa_rating_id " +
                     "left join film_director as fd on fd.film_id = f.film_id " +
                     "left join directors as d on fd.director_id = d.director_id " +
-                    "left join likes as l on f.film_id = l.film_id " +
                     "where d.director_id = ? " +
                     "group by film_id");
             return makeFilmList(jdbcTemplate.queryForRowSet(sqlQuery, id));
@@ -138,9 +136,8 @@ public class DbDirectorStorage implements DirectorStorage {
             String mpaName = rowSet.getString(7);
             int genreId = rowSet.getInt(8);
             String genreName = rowSet.getString(9);
-            int userLikeId = rowSet.getInt(10);
-            int directorId = rowSet.getInt(11);
-            String directorName = rowSet.getString(12);
+            int directorId = rowSet.getInt(10);
+            String directorName = rowSet.getString(11);
 
             //определяем был ли такой фильм в списке результата
             Film film = films.get(id);
@@ -169,15 +166,7 @@ public class DbDirectorStorage implements DirectorStorage {
                     directors = Collections.emptySet();
                 }
 
-                Set<Integer> likes;
-                if (userLikeId != 0) {
-                    likes = new HashSet<>();
-                    likes.add(userLikeId);
-                } else {
-                    likes = Collections.emptySet();
-                }
-
-                film = new Film(id, name, description, releaseDate, duration, genres, mpa, directors, likes);
+                film = new Film(id, name, description, releaseDate, duration, genres, mpa, directors);
 
                 //сохраняем фильм в список результата
                 films.put(film.getId(), film);
@@ -189,9 +178,6 @@ public class DbDirectorStorage implements DirectorStorage {
                 if (directorId != 0) {
                     film.getDirectors().add(new Director(directorId, directorName));
                 }
-                if (userLikeId != 0) {
-                    film.getLikes().add(userLikeId);
-                }
             }
         }
 
@@ -202,7 +188,7 @@ public class DbDirectorStorage implements DirectorStorage {
         int directorId = resultSet.getInt("director_id");
         String directorName = resultSet.getString("director_name");
         if (directorId == 0) {
-            throw new FindDirectorException("Not found director with this id");
+            throw new DirectorNotFoundException("Not found director with this id");
         }
         return new Director(directorId, directorName);
     }

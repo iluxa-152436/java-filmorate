@@ -6,7 +6,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Like;
-import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
 
@@ -21,13 +20,11 @@ import java.util.List;
 public class FilmController {
     private final FilmService filmService;
     private final LikeService likeService;
-    private final DirectorService directorService;
 
     @Autowired
-    public FilmController(FilmService filmService, LikeService likeService, DirectorService directorService) {
+    public FilmController(FilmService filmService, LikeService likeService) {
         this.filmService = filmService;
         this.likeService = likeService;
-        this.directorService = directorService;
     }
 
     @GetMapping
@@ -82,7 +79,7 @@ public class FilmController {
             case "year":
             case "likes":
                 log.debug("Requested films of director with id = {}, sort by {}", directorId, sortBy);
-                return directorService.getFilmsOfDirectorById(directorId, sortBy);
+                return filmService.getFilmsOfDirectorById(directorId, sortBy);
             default:
                 throw new IllegalArgumentException("Incorrect sorting order");
         }

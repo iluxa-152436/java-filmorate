@@ -7,9 +7,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -42,12 +40,7 @@ public class DirectorService {
         directorStorage.deleteDirectorById(id);
     }
 
-    public List<Film> getFilmsOfDirectorById(Integer directorId, String sortBy) {
-        List<Film> films = directorStorage.getFilmsOfDirectorById(directorId);
-        if (sortBy.equals("year")) {
-            return films.stream().sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
-        }
-        return films.stream().sorted(Comparator.comparingInt((Film film) -> film.getLikes().size())
-                .thenComparingInt(Film::getId)).collect(Collectors.toList());
+    public List<Film> getFilmsOfDirectorById(int directorId) {
+        return directorStorage.getFilmsOfDirectorById(directorId);
     }
 }

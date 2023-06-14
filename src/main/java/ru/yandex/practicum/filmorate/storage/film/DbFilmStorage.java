@@ -8,8 +8,6 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
-import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.exception.FindFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -196,6 +194,12 @@ public class DbFilmStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public int getNumberOfLikesByFilmId(int filmId) {
+        String sqlQuery = "select count(user_id) as count_of_likes from likes where film_id = ?";
+        return jdbcTemplate.queryForObject(sqlQuery, (rs, rowNum) -> rs.getInt("count_of_likes"), filmId);
+    }
+
     private Integer makeNextId(ResultSet rs) throws SQLException {
         int nextId = 1;
         if (rs.getInt(1) >= 1) {
@@ -246,7 +250,7 @@ public class DbFilmStorage implements FilmStorage {
                 } else {
                     directors = Collections.emptySet();
                 }
-                film = new Film(id, name, description, releaseDate, duration, genres, mpa, directors, null);
+                film = new Film(id, name, description, releaseDate, duration, genres, mpa, directors);
 
                 //сохраняем фильм в список результата
                 films.put(film.getId(), film);
