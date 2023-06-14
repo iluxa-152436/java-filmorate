@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
@@ -194,34 +195,79 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(Integer userId, Integer friendId) {
-        String sqlQuery = "  \n" +
-                "                                SELECT    \n" +
-                "                                f.film_id as film_id,  \n" +
-                "                                f.name as film_name,  \n" +
-                "                                f.release_date as release_date,  \n" +
-                "                                f.description as description,  \n" +
-                "                                f.duration as duration,  \n" +
-                "                                f.mpa_rating_id as mpa_rating_id \n" +
-                "                                , g.name as genre_name \n" +
-                "                                ,fg.genre_id as genre_id \n" +
-                "                                ,m.name as mpa_rating_name \n" +
-                "                                FROM likes u1 JOIN likes u2    \n" +
-                "                                    ON u1.film_id=u2.film_id    \n" +
-                "                                JOIN (SELECT film_id, COUNT(DISTINCT user_id) AS c   \n" +
-                "                                    FROM likes GROUP BY film_id) as f_count   \n" +
-                "                                   ON u1.film_id=f_count.film_id    \n" +
-                "                                     JOIN films f   \n" +
-                "                                     ON u1.film_id=f.film_id   \n" +
-                "                                       JOIN mpa_ratings m ON f.mpa_rating_id = m.mpa_rating_id   \n" +
-                "                                    LEFT JOIN FILM_GENRE fg ON fg.FILM_ID  = f.FILM_ID  \n" +
-                "                                    LEFT JOIN GENRES g ON fg.GENRE_ID = g.GENRE_ID  \n" +
-                "                                                WHERE     \n" +
-                "                                                  (u1.user_id = ? \n" +
-                "                                                  OR u2.user_id = ?) ";
+        /*String sqlQuery = " SELECT    DISTINCT " +
+                "      f.film_id as film_id," +
+                "      f.name as film_name," +
+                "      f.release_date as release_date," +
+                "      f.description as description," +
+                "      f.duration as duration," +
+                "      f.mpa_rating_id as mpa_rating_id," +
+                "      m.name as mpa_rating_name" +
+                " FROM likes u1 " +
+                "         JOIN " +
+                "     likes u2" +
+                "     ON u1.film_id=u2.film_id " +
+                "     " +
+                "         JOIN (SELECT film_id, " +
+                "                      COUNT(DISTINCT user_id) AS c " +
+                "                      FROM likes GROUP BY film_id) as f_count " +
+                "     ON u1.film_id=f_count.film_id " +
+                "     " +
+                "     JOIN films f " +
+                "     ON u1.film_id=f.film_id " +
+                "     JOIN mpa_ratings m " +
+                "     ON f.mpa_rating_id = m.mpa_rating_id" +
+                "     WHERE u1.user_id = ? OR u2.user_id = ?";*/
 
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
+        String sqlQuery = "WITH common_films AS (" +
+                "   SELECT film_id FROM likes WHERE user_id = ? " +
+                "       INTERSECT " +
+                "   SELECT film_id FROM likes WHERE user_id = ? " +
+                ") " +
+                "SELECT f.film_id as film_id," +
+                "      f.name as film_name," +
+                "      f.release_date as release_date," +
+                "      f.description as description," +
+                "      f.duration as duration," +
+                "      f.mpa_rating_id as mpa_rating_id," +
+                "      m.name as mpa_rating_name" +
+                " FROM common_films c" +
+                "     JOIN films f " +
+                "     ON c.film_id=f.film_id " +
+                "     JOIN mpa_ratings m " +
+                "     ON f.mpa_rating_id = m.mpa_rating_id";
 
-        return makeFilmList(sqlRowSet);
+        List<Film> commonFilms = jdbcTemplate.query(sqlQuery,
+                (rs, rowNum) -> {
+                    Film film = new Film();
+                    film.setId(rs.getInt("film_id"));
+                    film.setName(rs.getString("film_name"));
+                    film.setReleaseDate(rs.getDate("release_date").toLocalDate());
+                    film.setDescription(rs.getString("description"));
+                    film.setDuration(rs.getInt("duration"));
+
+                    MpaRating mpaRating = new MpaRating(rs.getInt("mpa_rating_id"),
+                            rs.getString("mpa_rating_name"));
+
+                    film.setMpa(mpaRating);
+
+                    String sqlQueryFilmGenres = "SELECT g.genre_id, g.name FROM films f " +
+                            "JOIN film_genre fg " +
+                            "ON f.film_id=fg.film_id " +
+                            "JOIN genres g " +
+                            "ON fg.genre_id=g.genre_id " +
+                            "WHERE f.film_id = ?";
+                    List<Genre> genres = jdbcTemplate.query(sqlQueryFilmGenres,
+                            new BeanPropertyRowMapper<>(Genre.class),
+                            rs.getInt("film_id")
+                    );
+
+                    film.setGenres(new HashSet<>(genres));
+                    return film;
+                }, userId, friendId);
+
+
+        return commonFilms;
     }
 }
 
