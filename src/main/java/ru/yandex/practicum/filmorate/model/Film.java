@@ -1,6 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ru.yandex.practicum.filmorate.validator.ReleaseDateConstraint;
 
 import javax.validation.constraints.NotBlank;
@@ -34,6 +37,7 @@ public class Film {
     private int duration;
     private Set<Genre> genres;
     private MpaRating mpa;
+    private Set<Director> directors;
 
     public Film(int id,
                 String name,
@@ -41,7 +45,8 @@ public class Film {
                 LocalDate releaseDate,
                 int duration,
                 Set<Genre> genres,
-                MpaRating mpa) {
+                MpaRating mpa,
+                Set<Director> directors) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -49,6 +54,7 @@ public class Film {
         this.duration = duration;
 
         this.genres = Objects.requireNonNullElseGet(genres, HashSet::new);
+        this.directors = Objects.requireNonNullElseGet(directors, HashSet::new);
 
         this.mpa = mpa;
     }

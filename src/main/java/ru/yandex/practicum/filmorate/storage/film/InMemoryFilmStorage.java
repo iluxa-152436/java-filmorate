@@ -6,7 +6,9 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.like.InMemoryLikeStorage;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 @Qualifier("InMemory")
@@ -57,5 +59,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> getCommonFilms(Integer userId, Integer friendId) {
         return List.of();
+    }
+
+    @Override
+    public void deleteFilmById(int filmId) {
+
     }
 }

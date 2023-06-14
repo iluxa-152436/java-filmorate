@@ -9,17 +9,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.ApiErrorMessage;
+import ru.yandex.practicum.filmorate.model.NotFoundInDB;
 
 import javax.validation.ConstraintViolationException;
 
 @Slf4j
 @RestControllerAdvice
 public class ExceptionHandlerController {
+
     @ExceptionHandler(value = {FindFilmException.class,
             FindUserException.class,
             EmptyResultDataAccessException.class,
             FindMpaRatingException.class,
-            FindGenreException.class})
+            FindGenreException.class,
+            NotFoundInDB.class})
     public ResponseEntity<ApiErrorMessage> handleNotFoundException(Exception exception) {
         log.debug("Получен статус 404 Not found {}", exception.getMessage(), exception);
         return ResponseEntity

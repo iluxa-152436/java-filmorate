@@ -36,7 +36,6 @@ public class FilmService {
     }
 
     private void fillInGenres(Film film) {
-
         log.debug("Film {} fill in genres previous value = {}", film.getId(), film.getGenres());
         Set<Genre> genres = new HashSet<>();
         for (Genre genre : film.getGenres()) {
@@ -44,7 +43,6 @@ public class FilmService {
         }
         film.setGenres(genres);
         log.debug("New value = {}", film.getGenres());
-
     }
 
 
@@ -84,6 +82,10 @@ public class FilmService {
     public Film getFilm(int filmId) {
         checkId(filmId);
         return storage.getFilm(filmId);
+    }
+
+    public void deleteFilmById(int filmId) {
+        storage.deleteFilmById(filmId);
     }
 
     public List<Film> getCommonFilms(String userId, String friendId) {
