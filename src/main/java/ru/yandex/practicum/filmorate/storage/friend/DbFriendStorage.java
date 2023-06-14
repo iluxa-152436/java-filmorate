@@ -5,9 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.service.FeedService;
 
-import java.sql.Date;
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,16 +15,19 @@ import java.util.Set;
 public class DbFriendStorage implements FriendStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    private final FeedService feedService;
+
     @Autowired
-    public DbFriendStorage(JdbcTemplate jdbcTemplate) {
+    public DbFriendStorage(JdbcTemplate jdbcTemplate, FeedService feedService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.feedService = feedService;
     }
 
     @Override
     public void addFriend(int userId, int friendId) {
         String sql = "insert into friends(user_id, friend_id) values(?,?)";
         if (jdbcTemplate.update(sql, userId, friendId) != 0) {
-            addFriendToFeed(userId, friendId);
+            feedService.addFeed(userId, friendId, "FRIEND", "ADD");
         }
     }
 
@@ -33,7 +35,7 @@ public class DbFriendStorage implements FriendStorage {
     public void deleteFriend(int userId, int friendId) {
         String sql = "delete from friends where user_id=? and friend_id=?";
         if (jdbcTemplate.update(sql, userId, friendId) != 0) {
-            deleteFriendInFeed(userId, friendId);
+            feedService.addDeleteFeed(userId, friendId, "FRIEND", "REMOVE");
         }
     }
 
@@ -59,15 +61,4 @@ public class DbFriendStorage implements FriendStorage {
         return jdbcTemplate.queryForObject(sql, Integer.class, userId) >= 1;
     }
 
-    private void addFriendToFeed(int userId, int friendId) {
-        String sqlQuery = "INSERT INTO feed(user_id, time_stamp, entity_id," +
-                " event_type, operation) VALUES(?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlQuery, userId, Date.from(Instant.now()), friendId, "FRIEND", "ADD");
-    }
-
-    private void deleteFriendInFeed(int userId, int friendId) {
-        String sqlQuery = "INSERT INTO feed(user_id, time_stamp, entity_id," +
-                " event_type, operation) VALUES(?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlQuery, userId, Date.from(Instant.now()), friendId, "FRIEND", "REMOVE");
-    }
 }

@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.FindUserException;
-import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
@@ -92,26 +91,6 @@ public class DbUserStorage implements UserStorage {
         }
     }
 
-    @Override
-    public List<Feed> getFeedsByUserId(int userId) {
-        if (containsUser(userId)) {
-            String sqlQuery = "SELECT * FROM feed WHERE user_id = ?";
-            return jdbcTemplate.query(sqlQuery, this::makeFeed, userId);
-        } else {
-            throw new FindUserException("User с id = " + userId + " получение ленты невозможно.");
-        }
-    }
-
-    private Feed makeFeed(ResultSet rs, int rowNum) throws SQLException {
-        return Feed.builder()
-                .eventId(rs.getInt("event_id"))
-                .userId(rs.getInt("user_id"))
-                .entityId(rs.getInt("entity_id"))
-                .operation(rs.getString("operation"))
-                .eventType(rs.getString("event_type"))
-                .timestamp(rs.getTimestamp("time_stamp"))
-                .build();
-    }
 
     private Integer makeNextId(ResultSet rs) throws SQLException {
         Integer nextId = 1;

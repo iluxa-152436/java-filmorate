@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ru.yandex.practicum.filmorate.validator.ReleaseDateConstraint;
 
 import javax.validation.constraints.NotBlank;
@@ -22,6 +19,7 @@ import static ru.yandex.practicum.filmorate.Constants.MAX_FILM_DESCRIPTION_LENGT
 @Setter
 @Getter
 @ToString
+@Builder
 public class Film {
     private int id;
     @NotBlank(message = "name cannot be empty")
