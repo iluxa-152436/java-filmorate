@@ -36,18 +36,15 @@ public class FilmService {
     }
 
     private void fillInGenres(Film film) {
-        try {
-            log.debug("Film {} fill in genres previous value = {}", film.getId(), film.getGenres());
-            Set<Genre> genres = new HashSet<>();
-            for (Genre genre : film.getGenres()) {
-                genres.add(genreService.getGenre(genre.getId()));
-            }
-            film.setGenres(genres);
-            log.debug("New value = {}", film.getGenres());
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            ex.printStackTrace();
+
+        log.debug("Film {} fill in genres previous value = {}", film.getId(), film.getGenres());
+        Set<Genre> genres = new HashSet<>();
+        for (Genre genre : film.getGenres()) {
+            genres.add(genreService.getGenre(genre.getId()));
         }
+        film.setGenres(genres);
+        log.debug("New value = {}", film.getGenres());
+
     }
 
 
