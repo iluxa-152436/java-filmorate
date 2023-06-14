@@ -76,4 +76,6 @@ public class Film {
 
         this.mpa = mpa;
     }
+
+    public Film(){}
 }
