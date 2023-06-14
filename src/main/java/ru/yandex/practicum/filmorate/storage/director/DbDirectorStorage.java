@@ -187,7 +187,7 @@ public class DbDirectorStorage implements DirectorStorage {
         int directorId = resultSet.getInt("director_id");
         String directorName = resultSet.getString("director_name");
         if (directorId == 0) {
-            throw new DirectorNotFoundException("Not found director with this id");
+            throw new FindDirectorException("Not found director with this id");
         }
         return new Director(directorId, directorName);
     }
