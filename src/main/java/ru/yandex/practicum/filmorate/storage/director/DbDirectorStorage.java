@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FindDirectorException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -70,7 +69,7 @@ public class DbDirectorStorage implements DirectorStorage {
             jdbcTemplate.update(sqlQuery, director.getName(), director.getId());
             return director;
         } else {
-            throw new DirectorNotFoundException("Director with id " + director.getId() + " not found");
+            throw new FindDirectorException("Director with id " + director.getId() + " not found");
         }
     }
 
@@ -80,7 +79,7 @@ public class DbDirectorStorage implements DirectorStorage {
             String sqlQuery = "delete from directors where director_id = ?";
             jdbcTemplate.update(sqlQuery, id);
         } else {
-            throw new DirectorNotFoundException("Director with id " + id + " not found");
+            throw new FindDirectorException("Director with id " + id + " not found");
         }
     }
 
@@ -108,7 +107,7 @@ public class DbDirectorStorage implements DirectorStorage {
                     "group by film_id");
             return makeFilmList(jdbcTemplate.queryForRowSet(sqlQuery, id));
         } else {
-            throw new DirectorNotFoundException("Director with id " + id + " not found");
+            throw new FindDirectorException("Director with id " + id + " not found");
         }
     }
 

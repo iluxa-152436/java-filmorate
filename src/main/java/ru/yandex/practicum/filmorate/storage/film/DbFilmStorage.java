@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
+import ru.yandex.practicum.filmorate.exception.FindDirectorException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.exception.FindFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -117,7 +117,7 @@ public class DbFilmStorage implements FilmStorage {
                 if (isContainsDirector(director.getId())) {
                     jdbcTemplate.update(sqlFilmDirector, film.getId(), director.getId());
                 } else {
-                    throw new DirectorNotFoundException("Director with id = " + director.getId() + " not found");
+                    throw new FindDirectorException("Director with id = " + director.getId() + " not found");
                 }
             }
         }

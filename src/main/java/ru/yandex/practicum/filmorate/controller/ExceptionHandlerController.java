@@ -22,7 +22,7 @@ public class ExceptionHandlerController {
             EmptyResultDataAccessException.class,
             FindMpaRatingException.class,
             FindGenreException.class,
-            DirectorNotFoundException.class,
+            FindDirectorException.class,
             NotFoundInDB.class})
     public ResponseEntity<ApiErrorMessage> handleNotFoundException(Exception exception) {
         log.debug("Получен статус 404 Not found {}", exception.getMessage(), exception);
@@ -32,7 +32,7 @@ public class ExceptionHandlerController {
     }
 
     @ExceptionHandler(value = {ValidateFilmException.class, ValidateUserException.class,
-            IllegalArgumentException.class, FindDirectorException.class})
+            IllegalArgumentException.class})
     public ResponseEntity<ApiErrorMessage> handleValidateException(Exception exception) {
         log.debug("Получен статус 400 Bad request {}", exception.getMessage(), exception);
         return ResponseEntity
