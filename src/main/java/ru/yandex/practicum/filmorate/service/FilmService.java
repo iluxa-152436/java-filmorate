@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FindFilmException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -19,18 +19,24 @@ public class FilmService {
     private final FilmStorage storage;
     private final GenreService genreService;
     private final MpaRatingService mpaRatingService;
+    private final DirectorService directorService;
 
     @Autowired
-    public FilmService(@Qualifier("DB") FilmStorage storage, GenreService genreService, MpaRatingService mpaRatingService) {
+    public FilmService(@Qualifier("DB") FilmStorage storage,
+                       GenreService genreService,
+                       MpaRatingService mpaRatingService,
+                       DirectorService directorService) {
         this.storage = storage;
         this.genreService = genreService;
         this.mpaRatingService = mpaRatingService;
+        this.directorService = directorService;
     }
 
     public Film createFilm(Film film) {
         film.setId(storage.getNextId());
         fillInMpaRating(film);
         fillInGenres(film);
+        fillInDirector(film);
         storage.saveFilm(film);
         return storage.getFilm(film.getId());
     }
@@ -43,6 +49,16 @@ public class FilmService {
         }
         film.setGenres(genres);
         log.debug("New value = {}", film.getGenres());
+    }
+
+    private void fillInDirector(Film film) {
+        log.debug("Film {} fill in director previous value = {}", film.getId(), film.getDirectors());
+        Set<Director> directors = new HashSet<>();
+        for (Director director : film.getDirectors()) {
+            directors.add(directorService.getDirector(director.getId()));
+        }
+        film.setDirectors(directors);
+        log.debug("New value = {}", film.getDirectors());
     }
 
 
@@ -59,6 +75,7 @@ public class FilmService {
         checkId(film);
         fillInMpaRating(film);
         fillInGenres(film);
+        fillInDirector(film);
         storage.updateFilm(film);
         return storage.getFilm(film.getId());
     }
@@ -82,5 +99,17 @@ public class FilmService {
     public Film getFilm(int filmId) {
         checkId(filmId);
         return storage.getFilm(filmId);
+    }
+
+    public List<Film> getSortedFilmsFilteredByDirectorId(Integer directorId) {
+        List<Integer> filmIds = directorService.getFilmsOfDirectorById(directorId);
+        List<Film> sortedFilms = new LinkedList<>();
+
+        for (Integer filmId : filmIds) {
+            sortedFilms.add(getFilm(filmId));
+        }
+        return sortedFilms.stream()
+                .sorted(Comparator.comparing(Film::getReleaseDate))
+                .collect(Collectors.toList());
     }
 }

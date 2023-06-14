@@ -53,7 +53,7 @@ class FilmControllerTest {
 
     @Test
     void createFilm() {
-        HttpEntity<Film> request = new HttpEntity<>(getFilmObj());
+        HttpEntity<Film> request = new HttpEntity<>(prepareFilmObj());
         Film film = restTemplate.postForObject("http://localhost:" + port + "/films", request, Film.class);
         Assertions.assertNotNull(film);
         assertEquals(1, film.getId());
@@ -70,6 +70,7 @@ class FilmControllerTest {
                 "description",
                 LocalDate.now(),
                 30,
+                null,
                 null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
@@ -90,6 +91,7 @@ class FilmControllerTest {
                 LocalDate.now(),
                 30,
                 null,
+                null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
@@ -108,6 +110,7 @@ class FilmControllerTest {
                 LocalDate.now(),
                 30,
                 null,
+                null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
@@ -122,6 +125,7 @@ class FilmControllerTest {
                 "description",
                 FIRST_RELEASE_DATE.minusDays(1),
                 30,
+                null,
                 null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
@@ -138,6 +142,7 @@ class FilmControllerTest {
                 FIRST_RELEASE_DATE,
                 30,
                 null,
+                null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
@@ -152,6 +157,7 @@ class FilmControllerTest {
                 "description",
                 FIRST_RELEASE_DATE,
                 -1,
+                null,
                 null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
@@ -168,6 +174,7 @@ class FilmControllerTest {
                 FIRST_RELEASE_DATE,
                 0,
                 null,
+                null,
                 null));
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/films",
                 request,
@@ -177,7 +184,7 @@ class FilmControllerTest {
 
     @Test
     void getFilms() throws ValidateFilmException {
-        Film film = getFilmObj();
+        Film film = prepareFilmObj();
         filmService.createFilm(film);
         ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:" + port + "/films",
                 Film[].class);
@@ -190,28 +197,31 @@ class FilmControllerTest {
                         LocalDate.now(),
                         30,
                         Collections.emptySet(),
-                        new MpaRating(1, "G")),
+                        new MpaRating(1, "G"),
+                        null),
                 films[0]);
     }
 
-    private static Film getFilmObj() {
+    private static Film prepareFilmObj() {
         return new Film(1,
                 "name",
                 "description",
                 LocalDate.now(),
                 30,
                 null,
-                new MpaRating(1, "G"));
+                new MpaRating(1, "G"),
+                null);
     }
 
     @Test
     void updateFilm() throws ValidateFilmException {
-        filmService.createFilm(getFilmObj());
+        filmService.createFilm(prepareFilmObj());
         HttpEntity<Film> request = new HttpEntity<>(new Film(1,
                 "update",
                 "update",
                 LocalDate.now(),
                 30,
+                null,
                 null,
                 null));
         Film updatedFilm = restTemplate.exchange("http://localhost:" + port + "/films/",
@@ -229,7 +239,7 @@ class FilmControllerTest {
 
     @Test
     void addLike() {
-        Film film = getFilmObj();
+        Film film = prepareFilmObj();
         filmService.createFilm(film);
         User user = getUser();
         userService.createUser(user);
@@ -242,7 +252,7 @@ class FilmControllerTest {
 
     @Test
     void deleteLike() {
-        Film film = getFilmObj();
+        Film film = prepareFilmObj();
         filmService.createFilm(film);
         User user = getUser();
         userService.createUser(user);
@@ -267,9 +277,9 @@ class FilmControllerTest {
 
     @Test
     void getPopularFilms() {
-        Film film1 = getFilmObj();
+        Film film1 = prepareFilmObj();
         filmService.createFilm(film1);
-        Film film2 = getFilmObj();
+        Film film2 = prepareFilmObj();
         filmService.createFilm(film2);
         User user1 = getUser();
         userService.createUser(user1);

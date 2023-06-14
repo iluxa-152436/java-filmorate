@@ -44,7 +44,8 @@ class DbFilmStorageTest {
                 LocalDate.of(1999, 04, 30),
                 120,
                 Collections.emptySet(),
-                new MpaRating(1, "G"));
+                new MpaRating(1, "G"),
+                null);
         filmStorage.saveFilm(film);
         assertEquals(film, filmStorage.getFilm(3));
     }
@@ -58,7 +59,8 @@ class DbFilmStorageTest {
                 LocalDate.of(1999, 04, 30),
                 100,
                 Collections.emptySet(),
-                new MpaRating(1, "G"));
+                new MpaRating(1, "G"),
+                null);
         filmStorage.updateFilm(film);
         assertEquals(film, filmStorage.getFilm(2));
     }

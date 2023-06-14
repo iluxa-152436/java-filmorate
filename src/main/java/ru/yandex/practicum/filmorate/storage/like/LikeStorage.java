@@ -3,14 +3,21 @@ package ru.yandex.practicum.filmorate.storage.like;
 import ru.yandex.practicum.filmorate.model.Like;
 
 import java.util.List;
-import java.util.Map;
 
 public interface LikeStorage {
     void saveLike(Like like);
 
     void deleteLike(Like like);
 
-    Map<Integer, Integer> getSortedFilmLikes(long limit);
+    List<Integer> getSortedFilmLikes(long limit);
 
-    Map<Integer, Integer> getSortedByLikesFilteredByFilmIds(String query, List<String> by);
+    List<Integer> getSortedFilmLikes(long limit, int genreId, String releaseDate);
+
+    List<Integer> getSortedFilmLikes(long limit, String releaseDate);
+
+    List<Integer> getSortedFilmLikes(long limit, int genreId);
+
+    List<Integer> getSortedFilmIdsFilteredByFilmIds(List<Integer> filmIds);
+
+    List<Integer> getSortedByLikesFilteredByFilmIds(String query, List<String> by);
 }

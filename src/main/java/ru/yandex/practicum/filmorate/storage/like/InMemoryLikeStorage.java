@@ -33,20 +33,40 @@ public class InMemoryLikeStorage implements LikeStorage {
     }
 
     @Override
-    public Map<Integer, Integer> getSortedFilmLikes(long limit) {
+    public List<Integer> getSortedFilmLikes(long limit) {
         return filmLikes.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
                 .limit(limit)
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue,
-                        LinkedHashMap::new));
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Map<Integer, Integer> getSortedByLikesFilteredByFilmIds(String query, List<String> by) {
+    public List<Integer> getSortedFilmLikes(long limit, int genreId, String releaseDate) {
         return null;
-        //TODO реализовать поиск с фильтрацией
+        //TODO сделать реализацию
+    }
+
+    @Override
+    public List<Integer> getSortedFilmLikes(long limit, String releaseDate) {
+        return null;
+        //TODO сделать реализацию
+    }
+
+    @Override
+    public List<Integer> getSortedFilmLikes(long limit, int genreId) {
+        return null;
+        //TODO сделать реализацию
+    }
+
+    @Override
+    public List<Integer> getSortedFilmIdsFilteredByFilmIds(List<Integer> filmIds) {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getSortedByLikesFilteredByFilmIds(String query, List<String> by) {
+        return null;
     }
 
     public void addFilmToLikeList(Integer filmId) {

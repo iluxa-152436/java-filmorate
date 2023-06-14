@@ -59,12 +59,27 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive long count) {
-        return likeService.getSortedFilms(count);
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive long count,
+                                      @RequestParam(required = false) @Positive Integer genreId,
+                                      @RequestParam(required = false) String year) {
+        return likeService.getSortedFilms(count, genreId, year);
     }
 
     @GetMapping("/search")
     public List<Film> searchFilms(@RequestParam String query, @RequestParam List<String> by) {
         return likeService.getSortedAndFilteredFilms(query, by);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsOfDirectorById(@PathVariable Integer directorId, @RequestParam String sortBy) {
+        log.debug("Requested films of director with id = {}, sort by {}", directorId, sortBy);
+        switch (sortBy) {
+            case "year":
+                return filmService.getSortedFilmsFilteredByDirectorId(directorId);
+            case "likes":
+                return likeService.getSortedFilmsFilteredByDirectorId(directorId);
+            default:
+                throw new IllegalArgumentException("Incorrect sorting order");
+        }
     }
 }

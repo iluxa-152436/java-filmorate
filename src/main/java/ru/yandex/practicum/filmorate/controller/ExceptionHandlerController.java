@@ -17,9 +17,10 @@ import javax.validation.ConstraintViolationException;
 public class ExceptionHandlerController {
     @ExceptionHandler(value = {FindFilmException.class,
             FindUserException.class,
-            EmptyResultDataAccessException.class,
             FindMpaRatingException.class,
-            FindGenreException.class})
+            FindGenreException.class,
+            FindDirectorException.class,
+            EmptyResultDataAccessException.class})
     public ResponseEntity<ApiErrorMessage> handleNotFoundException(Exception exception) {
         log.debug("Получен статус 404 Not found {}", exception.getMessage(), exception);
         return ResponseEntity

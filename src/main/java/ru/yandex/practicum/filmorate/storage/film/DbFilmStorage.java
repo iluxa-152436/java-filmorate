@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
@@ -48,6 +49,7 @@ public class DbFilmStorage implements FilmStorage {
                     null);
         }
         saveFilmGenre(film);
+        saveFilmDirector(film);
     }
 
     @Override
@@ -74,6 +76,23 @@ public class DbFilmStorage implements FilmStorage {
 
         deleteFilmGenre(film);
         saveFilmGenre(film);
+        deleteFilmDirector(film);
+        saveFilmDirector(film);
+    }
+
+    private void saveFilmDirector(Film film) {
+        log.debug("Film contains directors: {}", film.getDirectors().toString());
+        if (!film.getDirectors().isEmpty()) {
+            String sql = "insert into film_director(film_id, director_id) values(?,?)";
+            for (Director director : film.getDirectors()) {
+                jdbcTemplate.update(sql, film.getId(), director.getId());
+            }
+        }
+    }
+
+    private void deleteFilmDirector(Film film) {
+        String sql = "delete from film_director where film_id=?";
+        jdbcTemplate.update(sql, film.getId());
     }
 
     private void deleteFilmGenre(Film film) {
@@ -101,11 +120,16 @@ public class DbFilmStorage implements FilmStorage {
                 "f.mpa_rating_id as mpa_rating_id, " +
                 "g.name as name, " +
                 "g.genre_id as genre_id, " +
-                "m.name as mpa_rating_name " +
+                "m.name as mpa_rating_name, " +
+                "fd.director_id as director_id, " +
+                "d.name as directorname " +
                 "from films as f " +
                 "left join film_genre as fg on f.film_id = fg.film_id " +
                 "left join genres as g on fg.genre_id = g.genre_id " +
-                "left join mpa_ratings m on f.mpa_rating_id = m.mpa_rating_id");
+                "left join mpa_ratings m on f.mpa_rating_id = m.mpa_rating_id " +
+                "left join film_director as fd on f.film_id = fd.film_id " +
+                "left join directors as d on fd.director_id = d.director_id "+
+                "order by film_id, genre_id");
         return makeFilmList(rowSet);
     }
 
@@ -124,11 +148,15 @@ public class DbFilmStorage implements FilmStorage {
                 "f.mpa_rating_id as mpa_rating_id, " +
                 "g.name as name, " +
                 "g.genre_id as genre_id, " +
-                "m.name as mpa_rating_name " +
+                "m.name as mpa_rating_name, " +
+                "fd.director_id as director_id, " +
+                "d.name as directorname " +
                 "from films as f " +
                 "left join film_genre as fg on f.film_id = fg.film_id " +
                 "left join genres as g on fg.genre_id = g.genre_id " +
-                "left join mpa_ratings m on f.mpa_rating_id = m.mpa_rating_id " +
+                "left join mpa_ratings as m on f.mpa_rating_id = m.mpa_rating_id " +
+                "left join film_director as fd on f.film_id = fd.film_id " +
+                "left join directors as d on fd.director_id = d.director_id " +
                 "where f.film_id=? " +
                 "order by film_id, genre_id", filmId);
         return makeFilmList(rowSet).get(0);
@@ -141,7 +169,7 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     private Integer makeNextId(ResultSet rs) throws SQLException {
-        Integer nextId = 1;
+        int nextId = 1;
         if (rs.getInt(1) >= 1) {
             nextId = rs.getInt(2) + 1;
         }
@@ -153,15 +181,18 @@ public class DbFilmStorage implements FilmStorage {
 
         while (rowSet.next()) {
             //получить все значения из строки
-            Integer id = rowSet.getInt("film_id");
+            int id = rowSet.getInt("film_id");
             String description = rowSet.getString("description");
-            Integer duration = rowSet.getInt("duration");
+            int duration = rowSet.getInt("duration");
             LocalDate releaseDate = rowSet.getDate("release_date").toLocalDate();
-            Integer mpaId = rowSet.getInt("mpa_rating_id");
-            Integer genreId = rowSet.getInt("genre_id");
+            int mpaId = rowSet.getInt("mpa_rating_id");
+            int genreId = rowSet.getInt("genre_id");
             String genreName = rowSet.getString(7);
             String name = rowSet.getString(2);
             String mpaName = rowSet.getString(9);
+            int directorId = rowSet.getInt(10);
+            String directorName = rowSet.getString(11);
+
 
             //определяем был ли такой фильм в списке результата
             Film film = films.get(id);
@@ -181,7 +212,16 @@ public class DbFilmStorage implements FilmStorage {
                 } else {
                     mpa = null;
                 }
-                film = new Film(id, name, description, releaseDate, duration, genres, mpa);
+                //создаем новый объект режиссер
+                Set<Director> directors;
+                if (directorId != 0) {
+                    directors = new HashSet<>();
+                    directors.add(new Director(directorId, directorName));
+                } else {
+                    directors = Collections.emptySet();
+                }
+                //создаем фильм
+                film = new Film(id, name, description, releaseDate, duration, genres, mpa, directors);
 
                 //сохраняем фильм в список результата
                 films.put(film.getId(), film);
