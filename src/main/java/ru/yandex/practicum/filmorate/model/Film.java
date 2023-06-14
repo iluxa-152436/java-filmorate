@@ -78,5 +78,6 @@ public class Film {
     }
 
     public Film() {
+        this.genres = Objects.requireNonNullElseGet(genres, HashSet::new);
     }
 }
