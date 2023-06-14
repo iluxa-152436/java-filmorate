@@ -17,19 +17,18 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.exception.ValidateFilmException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import ru.yandex.practicum.filmorate.model.Like;
-import ru.yandex.practicum.filmorate.model.MpaRating;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Set;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
@@ -50,6 +49,9 @@ class FilmControllerTest {
 
     @Autowired
     private LikeService likeService;
+
+    @Autowired
+    private DirectorService directorService;
 
     @Test
     void createFilm() {
@@ -273,6 +275,33 @@ class FilmControllerTest {
                 null,
                 String.class);
         assertEquals(404, response.getStatusCodeValue());
+    }
+
+    @Test
+    void getFilmsOfDirectorById() {
+        Director director = new Director(1, "Dir");
+        directorService.createDirector(director);
+        Film film = new Film(1, "Name", "Des", LocalDate.of(2010, 5, 10),
+                150, null, new MpaRating(1, "G"), Set.of(director));
+        film.setDirectors(Set.of(director));
+        Film film2 = new Film(2, "Name2", "Descr", LocalDate.of(2000, 5, 10),
+                150, null, new MpaRating(1, "G"), Set.of(director));
+        filmService.createFilm(film);
+        filmService.createFilm(film2);
+
+        ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:" + port +
+                "/films/director/1?sortBy=year", Film[].class);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        Film[] films = response.getBody();
+        assertEquals(1, films[1].getId());
+        assertEquals(2, films[0].getId());
+
+        ResponseEntity<Film[]> response2 = restTemplate.getForEntity("http://localhost:" + port +
+                "/films/director/1?sortBy=likes", Film[].class);
+        assertTrue(response2.getStatusCode().is2xxSuccessful());
+        Film[] films2 = response2.getBody();
+        assertEquals(1, films2[0].getId());
+        assertEquals(2, films2[1].getId());
     }
 
     @Test
