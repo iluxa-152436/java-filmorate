@@ -215,17 +215,11 @@ public class DbFilmStorage implements FilmStorage {
 
         List<Film> commonFilms = jdbcTemplate.query(sqlQuery,
                 (rs, rowNum) -> {
-                    Film film = new Film();
-                    film.setId(rs.getInt("film_id"));
-                    film.setName(rs.getString("film_name"));
-                    film.setReleaseDate(rs.getDate("release_date").toLocalDate());
-                    film.setDescription(rs.getString("description"));
-                    film.setDuration(rs.getInt("duration"));
+
 
                     MpaRating mpaRating = new MpaRating(rs.getInt("mpa_rating_id"),
                             rs.getString("mpa_rating_name"));
 
-                    film.setMpa(mpaRating);
 
                     String sqlQueryFilmGenres = "SELECT g.genre_id, g.name FROM films f " +
                             "JOIN film_genre fg " +
@@ -238,7 +232,14 @@ public class DbFilmStorage implements FilmStorage {
                             rs.getInt("film_id")
                     );
 
-                    film.setGenres(new HashSet<>(genres));
+                    Film film = new Film(rs.getInt("film_id"),
+                            rs.getString("film_name"),
+                            rs.getString("description"),
+                            rs.getDate("release_date").toLocalDate(),
+                            rs.getInt("duration"),
+                            new HashSet<>(genres),
+                            mpaRating
+                    );
                     return film;
                 }, userId, friendId);
 
