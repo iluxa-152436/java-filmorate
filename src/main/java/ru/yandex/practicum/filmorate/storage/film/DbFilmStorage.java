@@ -195,30 +195,6 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(Integer userId, Integer friendId) {
-        /*String sqlQuery = " SELECT    DISTINCT " +
-                "      f.film_id as film_id," +
-                "      f.name as film_name," +
-                "      f.release_date as release_date," +
-                "      f.description as description," +
-                "      f.duration as duration," +
-                "      f.mpa_rating_id as mpa_rating_id," +
-                "      m.name as mpa_rating_name" +
-                " FROM likes u1 " +
-                "         JOIN " +
-                "     likes u2" +
-                "     ON u1.film_id=u2.film_id " +
-                "     " +
-                "         JOIN (SELECT film_id, " +
-                "                      COUNT(DISTINCT user_id) AS c " +
-                "                      FROM likes GROUP BY film_id) as f_count " +
-                "     ON u1.film_id=f_count.film_id " +
-                "     " +
-                "     JOIN films f " +
-                "     ON u1.film_id=f.film_id " +
-                "     JOIN mpa_ratings m " +
-                "     ON f.mpa_rating_id = m.mpa_rating_id" +
-                "     WHERE u1.user_id = ? OR u2.user_id = ?";*/
-
         String sqlQuery = "WITH common_films AS (" +
                 "   SELECT film_id FROM likes WHERE user_id = ? " +
                 "       INTERSECT " +
