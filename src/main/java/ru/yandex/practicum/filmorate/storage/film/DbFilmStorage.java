@@ -317,8 +317,6 @@ public class DbFilmStorage implements FilmStorage {
                     );
                     return film;
                 }, userId, friendId);
-
-
         return commonFilms;
     }
 }
