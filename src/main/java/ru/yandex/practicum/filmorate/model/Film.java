@@ -66,13 +66,7 @@ public class Film {
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-
         this.genres = Objects.requireNonNullElseGet(genres, HashSet::new);
-
         this.mpa = mpa;
-    }
-
-    public Film() {
-        this.genres = Objects.requireNonNullElseGet(genres, HashSet::new);
     }
 }
