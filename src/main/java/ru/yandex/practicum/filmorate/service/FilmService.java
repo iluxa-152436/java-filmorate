@@ -104,5 +104,9 @@ public class FilmService {
         return films.stream().sorted(Comparator.comparingInt((Film film) ->
                         storage.getNumberOfLikesByFilmId(film.getId()))
                 .thenComparingInt(Film::getId)).collect(Collectors.toList());
+      
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return storage.getCommonFilms(userId,
+                friendId);
     }
 }

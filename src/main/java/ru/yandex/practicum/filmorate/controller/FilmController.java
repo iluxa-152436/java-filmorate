@@ -84,4 +84,10 @@ public class FilmController {
                 throw new IllegalArgumentException("Incorrect sorting order");
         }
     }
+
+  
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam Integer userId, @RequestParam Integer friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
 }
