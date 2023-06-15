@@ -10,7 +10,6 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Like;
 
-import java.util.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -110,18 +109,6 @@ public class DbLikeStorage implements LikeStorage {
         stringBuilder.append("order by count(l.user_id) desc");
 
         String sql = String.valueOf(stringBuilder);
-        SqlRowSet rowSet = namedParameterJdbcTemplate.queryForRowSet(sql, namedParameters);
-        return makeFilmLikesList(rowSet);
-    }
-
-    @Override
-    public List<Integer> getSortedFilmIdsFilteredByFilmIds(List<Integer> filmIds) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("ids", filmIds);
-        String sql = "select f.film_id, count(l.user_id) from films as f " +
-                "left join likes as l on f.film_id=l.film_id " +
-                "where f.film_id in (:ids) " +
-                "group by f.film_id " +
-                "order by count(l.user_id) desc";
         SqlRowSet rowSet = namedParameterJdbcTemplate.queryForRowSet(sql, namedParameters);
         return makeFilmLikesList(rowSet);
     }

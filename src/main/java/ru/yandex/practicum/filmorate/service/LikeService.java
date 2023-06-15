@@ -18,14 +18,12 @@ public class LikeService {
     private final FilmService filmService;
     private final UserService userService;
     private final FeedService feedService;
-    private final DirectorService directorService;
 
     @Autowired
-    public LikeService(@Qualifier("DB") LikeStorage likeStorage, FilmService filmService, UserService userService, FeedService feedService, DirectorService directorService) {
+    public LikeService(@Qualifier("DB") LikeStorage likeStorage, FilmService filmService, UserService userService, FeedService feedService) {
         this.likeStorage = likeStorage;
         this.filmService = filmService;
         this.userService = userService;
-        this.directorService = directorService;
         this.feedService = feedService;
     }
 
@@ -71,24 +69,6 @@ public class LikeService {
         List<Integer> sortedFilmIds = likeStorage.getSortedByLikesFilteredByFilmIds(query, by);
         log.debug("sortedFilmIds {}", sortedFilmIds);
         List<Film> sortedFilms = new ArrayList<>();
-        for (Integer filmId : sortedFilmIds) {
-            sortedFilms.add(filmService.getFilm(filmId));
-        }
-        return sortedFilms;
-    }
-
-    public List<Integer> sortFilmIdsByLikes(List<Integer> filmIds) {
-        log.debug("FilmIds before sorting = {}", filmIds);
-        List<Integer> sortedFilmIds = likeStorage.getSortedFilmIdsFilteredByFilmIds(filmIds);
-        log.debug("FilmIds after sorting = {}", filmIds);
-        return sortedFilmIds;
-    }
-
-    public List<Film> getSortedFilmsFilteredByDirectorId(Integer directorId) {
-        List<Integer> filmIds = directorService.getFilmsOfDirectorById(directorId);
-        List<Film> sortedFilms = new LinkedList<>();
-
-        List<Integer> sortedFilmIds = sortFilmIdsByLikes(filmIds);
         for (Integer filmId : sortedFilmIds) {
             sortedFilms.add(filmService.getFilm(filmId));
         }

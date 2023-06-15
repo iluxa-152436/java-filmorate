@@ -60,11 +60,6 @@ public class InMemoryLikeStorage implements LikeStorage {
     }
 
     @Override
-    public List<Integer> getSortedFilmIdsFilteredByFilmIds(List<Integer> filmIds) {
-        return null;
-    }
-
-    @Override
     public List<Integer> getSortedByLikesFilteredByFilmIds(String query, List<String> by) {
         return null;
     }
