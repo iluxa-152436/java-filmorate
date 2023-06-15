@@ -10,7 +10,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,7 +39,6 @@ public class FilmService {
         film.setId(storage.getNextId());
         fillInMpaRating(film);
         fillInGenres(film);
-        fillInDirector(film);
         storage.saveFilm(film);
         return storage.getFilm(film.getId());
     }
@@ -44,21 +46,13 @@ public class FilmService {
     private void fillInGenres(Film film) {
         log.debug("Film {} fill in genres previous value = {}", film.getId(), film.getGenres());
         Set<Genre> genres = new HashSet<>();
-        for (Genre genre : film.getGenres()) {
-            genres.add(genreService.getGenre(genre.getId()));
+        if (film.getGenres() != null) {
+            for (Genre genre : film.getGenres()) {
+                genres.add(genreService.getGenre(genre.getId()));
+            }
         }
         film.setGenres(genres);
         log.debug("New value = {}", film.getGenres());
-    }
-
-    private void fillInDirector(Film film) {
-        log.debug("Film {} fill in director previous value = {}", film.getId(), film.getDirectors());
-        Set<Director> directors = new HashSet<>();
-        for (Director director : film.getDirectors()) {
-            directors.add(directorService.getDirector(director.getId()));
-        }
-        film.setDirectors(directors);
-        log.debug("New value = {}", film.getDirectors());
     }
 
 
@@ -75,7 +69,6 @@ public class FilmService {
         checkId(film);
         fillInMpaRating(film);
         fillInGenres(film);
-        fillInDirector(film);
         storage.updateFilm(film);
         return storage.getFilm(film.getId());
     }
@@ -101,15 +94,22 @@ public class FilmService {
         return storage.getFilm(filmId);
     }
 
-    public List<Film> getSortedFilmsFilteredByDirectorId(Integer directorId) {
-        List<Integer> filmIds = directorService.getFilmsOfDirectorById(directorId);
-        List<Film> sortedFilms = new LinkedList<>();
+    public void deleteFilmById(int filmId) {
+        storage.deleteFilmById(filmId);
+    }
 
-        for (Integer filmId : filmIds) {
-            sortedFilms.add(getFilm(filmId));
+    public List<Film> getFilmsOfDirectorById(Integer directorId, String sortBy) {
+        List<Film> films = directorService.getFilmsOfDirectorById(directorId);
+        if (sortBy.equals("year")) {
+            return films.stream().sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
         }
-        return sortedFilms.stream()
-                .sorted(Comparator.comparing(Film::getReleaseDate))
-                .collect(Collectors.toList());
+        return films.stream().sorted(Comparator.comparingInt((Film film) ->
+                        storage.getNumberOfLikesByFilmId(film.getId()))
+                .thenComparingInt(Film::getId)).collect(Collectors.toList());
+    }
+
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return storage.getCommonFilms(userId,
+                friendId);
     }
 }

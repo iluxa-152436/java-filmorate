@@ -1,21 +1,18 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Director {
-    private int id;
+    @EqualsAndHashCode.Exclude
+    private Integer id;
     @NotBlank(message = "name cannot be empty")
     private String name;
-
-    public Director(@JsonProperty("id") int id, @JsonProperty("name") String name) {
-        this.id = id;
-        this.name = name;
-    }
 }

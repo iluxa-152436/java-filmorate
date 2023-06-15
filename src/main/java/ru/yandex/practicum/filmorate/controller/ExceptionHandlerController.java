@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.ApiErrorMessage;
+import ru.yandex.practicum.filmorate.exception.NotFoundInDB;
 
 import javax.validation.ConstraintViolationException;
 
@@ -17,10 +18,11 @@ import javax.validation.ConstraintViolationException;
 public class ExceptionHandlerController {
     @ExceptionHandler(value = {FindFilmException.class,
             FindUserException.class,
+            EmptyResultDataAccessException.class,
             FindMpaRatingException.class,
             FindGenreException.class,
             FindDirectorException.class,
-            EmptyResultDataAccessException.class})
+            NotFoundInDB.class})
     public ResponseEntity<ApiErrorMessage> handleNotFoundException(Exception exception) {
         log.debug("Получен статус 404 Not found {}", exception.getMessage(), exception);
         return ResponseEntity
@@ -28,7 +30,8 @@ public class ExceptionHandlerController {
                 .body(new ApiErrorMessage(exception.getMessage()));
     }
 
-    @ExceptionHandler(value = {ValidateFilmException.class, ValidateUserException.class})
+    @ExceptionHandler(value = {ValidateFilmException.class, ValidateUserException.class,
+            IllegalArgumentException.class})
     public ResponseEntity<ApiErrorMessage> handleValidateException(Exception exception) {
         log.debug("Получен статус 400 Bad request {}", exception.getMessage(), exception);
         return ResponseEntity

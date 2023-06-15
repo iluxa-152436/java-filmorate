@@ -6,7 +6,9 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.like.InMemoryLikeStorage;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 @Qualifier("InMemory")
@@ -17,8 +19,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final InMemoryLikeStorage likeStorage;
 
     @Autowired
-    public InMemoryFilmStorage(HashMap<Integer, Film> films, InMemoryLikeStorage likeStorage) {
-        this.films = films;
+    public InMemoryFilmStorage(InMemoryLikeStorage likeStorage) {
+        this.films = new HashMap<>();
         this.likeStorage = likeStorage;
         id = 0;
     }
@@ -52,5 +54,20 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public int getNextId() {
         return ++id;
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return List.of();
+    }
+
+    @Override
+    public void deleteFilmById(int filmId) {
+
+    }
+
+    @Override
+    public int getNumberOfLikesByFilmId(int filmId) {
+        return 0;
     }
 }

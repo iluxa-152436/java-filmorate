@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
@@ -50,6 +52,12 @@ public class InMemoryUserStorage implements UserStorage {
     public int getNexId() {
         return ++id;
     }
+
+    @Override
+    public void deleteUserById(int userId) {
+
+    }
+
 
     @Override
     public User getUser(int userId) {

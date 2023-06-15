@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @EqualsAndHashCode
+@Builder
 public class User {
     private int id;
     @NotBlank(message = "email cannot be empty")

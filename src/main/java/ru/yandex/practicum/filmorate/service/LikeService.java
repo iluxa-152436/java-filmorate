@@ -8,7 +8,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -16,26 +17,30 @@ public class LikeService {
     private final LikeStorage likeStorage;
     private final FilmService filmService;
     private final UserService userService;
+    private final FeedService feedService;
     private final DirectorService directorService;
 
     @Autowired
-    public LikeService(@Qualifier("DB") LikeStorage likeStorage, FilmService filmService, UserService userService, DirectorService directorService) {
+    public LikeService(@Qualifier("DB") LikeStorage likeStorage, FilmService filmService, UserService userService, FeedService feedService, DirectorService directorService) {
         this.likeStorage = likeStorage;
         this.filmService = filmService;
         this.userService = userService;
         this.directorService = directorService;
+        this.feedService = feedService;
     }
 
     public void addLike(Like like) {
         userService.checkId(like.getUserId());
         filmService.checkId(like.getFilmId());
         likeStorage.saveLike(like);
+        feedService.addFeed(like.getUserId(), like.getFilmId(), "LIKE", "ADD");
     }
 
     public void deleteLike(Like like) {
         userService.checkId(like.getUserId());
         filmService.checkId(like.getFilmId());
         likeStorage.deleteLike(like);
+        feedService.addFeed(like.getUserId(), like.getFilmId(), "LIKE", "REMOVE");
     }
 
     public List<Film> getSortedFilms(long limit, Integer genreId, String releaseDate) {
