@@ -126,7 +126,7 @@ class UserControllerTest {
         assertEquals("1989-04-13", updatedUser.getBirthday().toString());
     }
 
-    private static User getUser() {
+    public static User getUser() {
         return new User(1,
                 "abc@abc.ru",
                 "login",
@@ -303,4 +303,5 @@ class UserControllerTest {
                 .isPresent()
                 .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
     }
+
 }

@@ -167,6 +167,7 @@ public class DbUserStorage implements UserStorage {
         return recommendedFilms;
     }
 
+
     private Integer makeNextId(ResultSet rs) throws SQLException {
         Integer nextId = 1;
         if (rs.getInt(1) >= 1) {

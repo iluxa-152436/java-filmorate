@@ -2,9 +2,12 @@ package ru.yandex.practicum.filmorate.storage.friend;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.FindUserException;
+import ru.yandex.practicum.filmorate.service.FeedService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,21 +17,32 @@ import java.util.Set;
 public class DbFriendStorage implements FriendStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    private final FeedService feedService;
+
     @Autowired
-    public DbFriendStorage(JdbcTemplate jdbcTemplate) {
+    public DbFriendStorage(JdbcTemplate jdbcTemplate, FeedService feedService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.feedService = feedService;
     }
 
     @Override
     public void addFriend(int userId, int friendId) {
         String sql = "insert into friends(user_id, friend_id) values(?,?)";
-        jdbcTemplate.update(sql, userId, friendId);
+        try {
+            jdbcTemplate.update(sql, userId, friendId);
+        } catch (DataAccessException e) {
+            throw new FindUserException("Ошибка добавления пользователя c id = " + friendId + "в друзья к пользователю c id = " + userId);
+        }
     }
 
     @Override
     public void deleteFriend(int userId, int friendId) {
         String sql = "delete from friends where user_id=? and friend_id=?";
-        jdbcTemplate.update(sql, userId, friendId);
+        try {
+            jdbcTemplate.update(sql, userId, friendId);
+        } catch (DataAccessException e) {
+            throw new FindUserException("Ошибка удаления друга c id = " + friendId + "в друзья к пользователю c id = " + userId);
+        }
     }
 
     @Override
@@ -52,4 +66,5 @@ public class DbFriendStorage implements FriendStorage {
         String sql = "select count(*) from friends where user_id=?";
         return jdbcTemplate.queryForObject(sql, Integer.class, userId) >= 1;
     }
+
 }

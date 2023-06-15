@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -20,6 +21,7 @@ public class FilmController {
     private final FilmService filmService;
     private final LikeService likeService;
 
+    @Autowired
     public FilmController(FilmService filmService, LikeService likeService) {
         this.filmService = filmService;
         this.likeService = likeService;
@@ -69,5 +71,22 @@ public class FilmController {
     public void deleteFilmById(@PathVariable int filmId) {
         log.debug("Received values filmId = {}", filmId);
         filmService.deleteFilmById(filmId);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsOfDirectorById(@PathVariable Integer directorId, @RequestParam String sortBy) {
+        switch (sortBy) {
+            case "year":
+            case "likes":
+                log.debug("Requested films of director with id = {}, sort by {}", directorId, sortBy);
+                return filmService.getFilmsOfDirectorById(directorId, sortBy);
+            default:
+                throw new IllegalArgumentException("Incorrect sorting order");
+        }
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam Integer userId, @RequestParam Integer friendId) {
+        return filmService.getCommonFilms(userId, friendId);
     }
 }

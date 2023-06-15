@@ -19,8 +19,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final InMemoryLikeStorage likeStorage;
 
     @Autowired
-    public InMemoryFilmStorage(HashMap<Integer, Film> films, InMemoryLikeStorage likeStorage) {
-        this.films = films;
+    public InMemoryFilmStorage(InMemoryLikeStorage likeStorage) {
+        this.films = new HashMap<>();
         this.likeStorage = likeStorage;
         id = 0;
     }
@@ -57,7 +57,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return List.of();
+    }
+
+    @Override
     public void deleteFilmById(int filmId) {
 
+    }
+
+    @Override
+    public int getNumberOfLikesByFilmId(int filmId) {
+        return 0;
     }
 }

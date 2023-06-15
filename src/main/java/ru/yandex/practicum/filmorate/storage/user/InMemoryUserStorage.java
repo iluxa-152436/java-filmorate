@@ -59,6 +59,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     }
 
+
     @Override
     public List<Film> getRecommendations(Integer id) {
         return List.of();
