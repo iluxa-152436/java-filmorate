@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.MpaRating;
-import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -88,18 +85,27 @@ class DbFeedStorageImplTest {
     }
 
     @Test
-    void addFeedShouldAddFeed() {
+    void addFeedShouldAddRightFeed() {
+        dbFeedStorage.addFeed(user1.getId(), user2.getId(), "FRIEND", "ADD");
+
+        Optional<Feed> feedsOptional = Optional.ofNullable(dbFeedStorage.getFeedsByUserId(1).get(0));
+        assertThat(feedsOptional.get().getUserId()).isEqualTo(1);
+        assertThat(feedsOptional.get().getEventType()).isEqualTo("FRIEND");
+        assertThat(feedsOptional.get().getOperation()).isEqualTo("ADD");
+    }
+
+    @Test
+    void getFeedByUserIdShouldReturnFeed() {
         Optional<Integer> optionalFeedsSize = Optional.of(dbFeedStorage.getFeedsByUserId(user1.getId()).size());
 
         assertThat(optionalFeedsSize).isPresent()
                 .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(0));
 
-        dbFeedStorage.addFeed(user1.getId(), user2.getId(), "FRIEND", "ADD");
+        dbFeedStorage.addFeed(user1.getId(), user2.getId(), "FRIEND", "REMOVE");
 
         optionalFeedsSize = Optional.of(dbFeedStorage.getFeedsByUserId(user1.getId()).size());
 
         assertThat(optionalFeedsSize).isPresent()
                 .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(1));
-
     }
 }

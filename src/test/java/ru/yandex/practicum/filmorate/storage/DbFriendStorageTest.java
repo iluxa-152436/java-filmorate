@@ -56,19 +56,4 @@ class DbFriendStorageTest {
     void hasFriends() {
         assertTrue(friendStorage.hasFriends(2));
     }
-
-    @Test
-    @Sql("classpath:test_data.sql")
-    void addFriendShouldAddFeed() {
-        friendStorage.addFriend(1, 2);
-        assertEquals(1, jdbcTemplate.queryForObject("select count(*) from feed", Integer.class));
-    }
-
-    @Test
-    @Sql("classpath:test_data.sql")
-    void deleteFriendShouldAddFeed() {
-        friendStorage.addFriend(1, 2);
-        friendStorage.deleteFriend(1, 2);
-        assertEquals(2, jdbcTemplate.queryForObject("select count(*) from feed", Integer.class));
-    }
 }
