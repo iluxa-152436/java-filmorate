@@ -20,4 +20,6 @@ public interface FilmStorage {
     List<Film> getCommonFilms(Integer userId, Integer friendId);
 
     void deleteFilmById(int filmId);
+
+    int getNumberOfLikesByFilmId(int filmId);
 }

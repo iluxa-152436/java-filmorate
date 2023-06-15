@@ -1,18 +1,18 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
 public class Director {
-    private int id;
+    @EqualsAndHashCode.Exclude
+    private Integer id;
     @NotBlank(message = "name cannot be empty")
     private String name;
 }

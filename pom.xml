@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<scope>build</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>

@@ -21,6 +21,7 @@ import ru.yandex.practicum.filmorate.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -49,6 +50,9 @@ class FilmControllerTest {
 
     @Autowired
     private LikeService likeService;
+
+    @Autowired
+    private DirectorService directorService;
 
     @Test
     void createFilm() {
@@ -221,7 +225,7 @@ class FilmControllerTest {
         return new Film(1,
                 "name",
                 "description",
-                LocalDate.of(1999, 04, 20),
+                LocalDate.of(1999, 4, 20),
                 30,
                 genres,
                 new MpaRating(1, "G"),
@@ -309,6 +313,36 @@ class FilmControllerTest {
         Film[] films = response.getBody();
         assertEquals(2, films.length);
         assertEquals(1, films[0].getId());
+    }
+
+    @Test
+    void getFilmsOfDirectorById() {
+        Director director = new Director(1, "Dir");
+        directorService.createDirector(director);
+        Film film = new Film(1, "Name", "Des", LocalDate.of(2010, 5, 10),
+                150, null, new MpaRating(1, "G"), Set.of(director));
+
+        restTemplate.put("http://localhost:" + port +
+                "/1/like/1", Integer.class);
+
+        Film film2 = new Film(2, "Name2", "Descr", LocalDate.of(2000, 5, 10),
+                150, null, new MpaRating(1, "G"), Set.of(director));
+        filmService.createFilm(film);
+        filmService.createFilm(film2);
+
+        ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:" + port +
+                        "/films/director/1?sortBy=year", Film[].class);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        Film[] films = response.getBody();
+        assertEquals(1, films[1].getId());
+        assertEquals(2, films[0].getId());
+
+        ResponseEntity<Film[]> response2 = restTemplate.getForEntity("http://localhost:" + port +
+                "/films/director/1?sortBy=likes", Film[].class);
+        assertTrue(response2.getStatusCode().is2xxSuccessful());
+        Film[] films2 = response2.getBody();
+        assertEquals(1, films2[0].getId());
+        assertEquals(2, films2[1].getId());
     }
 
     @Test
