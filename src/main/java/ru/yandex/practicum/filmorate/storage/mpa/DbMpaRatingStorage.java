@@ -2,8 +2,10 @@ package ru.yandex.practicum.filmorate.storage.mpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.FindGenreException;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.sql.ResultSet;
@@ -29,8 +31,12 @@ public class DbMpaRatingStorage implements MpaRatingStorage {
 
     @Override
     public Optional<MpaRating> getMpaRating(int mpaRatingId) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject("select * from mpa_ratings where mpa_rating_id =?",
-                (rs, rowNum) -> makeMpaRating(rs), mpaRatingId));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject("select * from mpa_ratings where mpa_rating_id =?",
+                    (rs, rowNum) -> makeMpaRating(rs), mpaRatingId));
+        } catch (EmptyResultDataAccessException e) {
+            throw new FindGenreException("Жанр не найден");
+        }
     }
 
     @Override

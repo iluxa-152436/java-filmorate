@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.review;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -19,6 +20,7 @@ import java.util.List;
 @Qualifier("DB")
 public class DbReviewStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
+
 
     @Autowired
     public DbReviewStorage(JdbcTemplate jdbcTemplate) {
@@ -58,6 +60,7 @@ public class DbReviewStorage implements ReviewStorage {
     public void delete(int id) {
         String sql = "DELETE FROM reviews " +
                 "WHERE review_id=?";
+        Review review = getById(id);
         int result = jdbcTemplate.update(sql, id);
         if (result == 0) {
             throw new NotFoundInDB("Объекты для удаления не найдены");
@@ -76,11 +79,11 @@ public class DbReviewStorage implements ReviewStorage {
                 "r.review_id=l.review_id " +
                 "WHERE r.review_id = ? " +
                 "GROUP BY r.review_id, r.content, r.is_positive, r.user_id, r.film_id";
-        Review review = jdbcTemplate.queryForObject(sqlQuery, this::mapReview, id);
-        if (review == null) {
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, this::mapReview, id);
+        } catch (DataAccessException e) {
             throw new NotFoundInDB("Нет отзыва с таким id");
         }
-        return review;
     }
 
     private Review mapReview(ResultSet resultSet, int rowNum) throws SQLException {

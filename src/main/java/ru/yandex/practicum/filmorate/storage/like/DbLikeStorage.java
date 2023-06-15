@@ -15,9 +15,11 @@ import java.util.List;
 public class DbLikeStorage implements LikeStorage {
     private final JdbcTemplate jdbcTemplate;
 
+
     @Autowired
     public DbLikeStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+
     }
 
     @Override
@@ -63,6 +65,7 @@ public class DbLikeStorage implements LikeStorage {
         String sql = "insert into likes(user_id, film_id) values(?,?)";
         jdbcTemplate.update(sql, like.getUserId(), like.getFilmId());
     }
+
 
     @Override
     public void deleteLike(Like like) {

@@ -17,24 +17,28 @@ public class LikeService {
     private final LikeStorage likeStorage;
     private final FilmService filmService;
     private final UserService userService;
+    private final FeedService feedService;
 
     @Autowired
-    public LikeService(@Qualifier("DB") LikeStorage likeStorage, FilmService filmService, UserService userService) {
+    public LikeService(@Qualifier("DB") LikeStorage likeStorage, FilmService filmService, UserService userService, FeedService feedService) {
         this.likeStorage = likeStorage;
         this.filmService = filmService;
         this.userService = userService;
+        this.feedService = feedService;
     }
 
     public void addLike(Like like) {
         userService.checkId(like.getUserId());
         filmService.checkId(like.getFilmId());
         likeStorage.saveLike(like);
+        feedService.addFeed(like.getUserId(), like.getFilmId(), "LIKE", "ADD");
     }
 
     public void deleteLike(Like like) {
         userService.checkId(like.getUserId());
         filmService.checkId(like.getFilmId());
         likeStorage.deleteLike(like);
+        feedService.addFeed(like.getUserId(), like.getFilmId(), "LIKE", "REMOVE");
     }
 
     public List<Film> getSortedFilms(long limit, Integer genreId, String releaseDate) {
