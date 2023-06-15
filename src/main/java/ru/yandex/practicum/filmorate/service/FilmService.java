@@ -88,8 +88,8 @@ public class FilmService {
         storage.deleteFilmById(filmId);
     }
 
-    public List<Film> getCommonFilms(String userId, String friendId) {
-        return storage.getCommonFilms(Integer.parseInt(userId),
-                Integer.parseInt(friendId));
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return storage.getCommonFilms(userId,
+                friendId);
     }
 }
