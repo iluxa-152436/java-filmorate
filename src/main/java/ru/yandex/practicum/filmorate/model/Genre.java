@@ -13,4 +13,8 @@ public class Genre {
     private int id;
     @NotBlank(message = "name cannot be empty")
     private String name;
+
+    public Genre() {
+
+    }
 }

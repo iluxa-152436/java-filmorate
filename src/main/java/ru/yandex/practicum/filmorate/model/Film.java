@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
@@ -22,7 +23,7 @@ import static ru.yandex.practicum.filmorate.Constants.MAX_FILM_DESCRIPTION_LENGT
 @Setter
 @Getter
 @ToString
-public class Film {
+public class Film implements Serializable {
     private int id;
     @NotBlank(message = "name cannot be empty")
     private String name;
