@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.storage.friend;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.FindUserException;
 import ru.yandex.practicum.filmorate.service.FeedService;
 
 import java.util.HashSet;
@@ -26,16 +28,20 @@ public class DbFriendStorage implements FriendStorage {
     @Override
     public void addFriend(int userId, int friendId) {
         String sql = "insert into friends(user_id, friend_id) values(?,?)";
-        if (jdbcTemplate.update(sql, userId, friendId) != 0) {
-            feedService.addFeed(userId, friendId, "FRIEND", "ADD");
+        try {
+            jdbcTemplate.update(sql, userId, friendId);
+        } catch (DataAccessException e) {
+            throw new FindUserException("Ошибка добавления пользователя c id = " + friendId + "в друзья к пользователю c id = " + userId);
         }
     }
 
     @Override
     public void deleteFriend(int userId, int friendId) {
         String sql = "delete from friends where user_id=? and friend_id=?";
-        if (jdbcTemplate.update(sql, userId, friendId) != 0) {
-            feedService.addDeleteFeed(userId, friendId, "FRIEND", "REMOVE");
+        try {
+            jdbcTemplate.update(sql, userId, friendId);
+        } catch (DataAccessException e) {
+            throw new FindUserException("Ошибка удаления друга c id = " + friendId + "в друзья к пользователю c id = " + userId);
         }
     }
 

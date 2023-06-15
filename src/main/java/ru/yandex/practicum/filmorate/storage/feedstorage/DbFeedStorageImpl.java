@@ -39,20 +39,6 @@ public class DbFeedStorageImpl implements FeedStorage {
     }
 
     @Override
-    public void addDeleteFeed(int userId, int entityId, String eventType, String operation) {
-        String sqlQuery = "INSERT INTO feed(user_id, time_stamp, entity_id," +
-                " event_type, operation) VALUES(?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlQuery, userId, Date.from(Instant.now()), entityId, eventType, operation);
-    }
-
-    @Override
-    public void addUpdateFeed(int reviewId, String eventType, String operation) {
-        String sqlQuery = "INSERT INTO feed(user_id, time_stamp, entity_id," +
-                " event_type, operation) VALUES(?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlQuery, reviewService.getById(reviewId).getUserId(), java.sql.Date.from(Instant.now()), reviewId, "REVIEW", "UPDATE");
-    }
-
-    @Override
     public List<Feed> getFeedsByUserId(int userId) {
         if (userStorage.containsUser(userId)) {
             String sqlQuery = "SELECT * FROM feed WHERE user_id = ?";

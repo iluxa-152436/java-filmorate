@@ -102,37 +102,4 @@ class DbFeedStorageImplTest {
                 .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(1));
 
     }
-
-    @Test
-    void deleteFeedShouldAddFeed() {
-        Optional<Integer> optionalFeedsSize = Optional.of(dbFeedStorage.getFeedsByUserId(user1.getId()).size());
-
-        assertThat(optionalFeedsSize).isPresent()
-                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(0));
-
-        dbFeedStorage.addDeleteFeed(user1.getId(), user2.getId(), "FRIEND", "REMOVE");
-
-        optionalFeedsSize = Optional.of(dbFeedStorage.getFeedsByUserId(user1.getId()).size());
-
-        assertThat(optionalFeedsSize).isPresent()
-                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(1));
-
-    }
-
-    @Test
-    void updateFeedShouldAddFeed() {
-        reviewService.add(review);
-        Optional<Integer> optionalFeedsSize = Optional.of(dbFeedStorage.getFeedsByUserId(user1.getId()).size());
-
-        assertThat(optionalFeedsSize).isPresent()
-                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(1));
-
-        dbFeedStorage.addUpdateFeed(review.getId(), "REVIEW", "UPDATE");
-
-        optionalFeedsSize = Optional.of(dbFeedStorage.getFeedsByUserId(user1.getId()).size());
-
-        assertThat(optionalFeedsSize).isPresent()
-                .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
-
-    }
 }

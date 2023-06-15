@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.NotFoundInDB;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.service.FeedService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,12 +21,10 @@ import java.util.List;
 public class DbReviewStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    private final FeedService feedService;
 
     @Autowired
-    public DbReviewStorage(JdbcTemplate jdbcTemplate, FeedService feedService) {
+    public DbReviewStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.feedService = feedService;
     }
 
     @Override
@@ -42,9 +39,7 @@ public class DbReviewStorage implements ReviewStorage {
                 .addValue("film_id", review.getFilmId())
                 .addValue("user_id", review.getUserId());
         int id = simpleJdbcInsert.executeAndReturnKey(params).intValue();
-        feedService.addFeed(review.getUserId(), id, "REVIEW", "ADD");
-        review.setId(id);
-        return review;
+        return getById(id);
     }
 
     @Override
@@ -58,7 +53,6 @@ public class DbReviewStorage implements ReviewStorage {
         if (result == 0) {
             throw new NotFoundInDB("Объекты для обновления не найдены");
         }
-        feedService.addUpdateFeed(review.getId(), "REVIEW", "UPDATE");
         return getById(review.getId());
     }
 
@@ -71,7 +65,6 @@ public class DbReviewStorage implements ReviewStorage {
         if (result == 0) {
             throw new NotFoundInDB("Объекты для удаления не найдены");
         }
-        feedService.addDeleteFeed(review.getUserId(), review.getId(), "REVIEW", "REMOVE");
     }
 
     @Override

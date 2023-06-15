@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @RestController
 public class FeedController {
-    FeedService feedService;
+    private final FeedService feedService;
 
     @Autowired
     public FeedController(FeedService feedService) {

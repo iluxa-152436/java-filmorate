@@ -10,12 +10,11 @@ import java.util.Date;
 @Data
 @Builder
 public class Feed {
-
-    int userId;
+    private int userId;
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    Date timestamp;
-    int eventId;
-    int entityId;
-    String eventType;
-    String operation;
+    private Date timestamp;
+    private int eventId;
+    private int entityId;
+    private String eventType;
+    private String operation;
 }

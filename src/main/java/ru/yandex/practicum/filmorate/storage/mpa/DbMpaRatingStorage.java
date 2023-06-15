@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.FindGenreException;
 import ru.yandex.practicum.filmorate.model.MpaRating;
-import ru.yandex.practicum.filmorate.model.NotFoundInDB;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,7 +35,7 @@ public class DbMpaRatingStorage implements MpaRatingStorage {
             return Optional.ofNullable(jdbcTemplate.queryForObject("select * from mpa_ratings where mpa_rating_id =?",
                     (rs, rowNum) -> makeMpaRating(rs), mpaRatingId));
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundInDB("Жанр не найден");
+            throw new FindGenreException("Жанр не найден");
         }
     }
 

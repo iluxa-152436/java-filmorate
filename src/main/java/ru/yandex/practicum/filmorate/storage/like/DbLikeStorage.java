@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Like;
-import ru.yandex.practicum.filmorate.service.FeedService;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,12 +15,11 @@ import java.util.List;
 public class DbLikeStorage implements LikeStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    private final FeedService feedService;
 
     @Autowired
-    public DbLikeStorage(JdbcTemplate jdbcTemplate, FeedService feedService) {
+    public DbLikeStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.feedService = feedService;
+
     }
 
     @Override
@@ -65,17 +63,14 @@ public class DbLikeStorage implements LikeStorage {
     @Override
     public void saveLike(Like like) {
         String sql = "insert into likes(user_id, film_id) values(?,?)";
-        if (jdbcTemplate.update(sql, like.getUserId(), like.getFilmId()) != 0) {
-            feedService.addFeed(like.getUserId(), like.getFilmId(), "LIKE", "ADD");
-        }
+        jdbcTemplate.update(sql, like.getUserId(), like.getFilmId());
     }
+
 
     @Override
     public void deleteLike(Like like) {
         String sql = "delete from likes where user_id=? and film_id=?";
-        if (jdbcTemplate.update(sql, like.getUserId(), like.getFilmId()) != 0) {
-            feedService.addDeleteFeed(like.getUserId(), like.getFilmId(), "LIKE", "REMOVE");
-        }
+        jdbcTemplate.update(sql, like.getUserId(), like.getFilmId());
     }
 
     @Override
