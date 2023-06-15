@@ -140,7 +140,6 @@ public class DbUserStorage implements UserStorage {
                             mpaRating,
                             new HashSet<>()
                     );
-                    System.out.println(film);
                     return film;
                 });
 
