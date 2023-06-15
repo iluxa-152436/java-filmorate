@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import static ru.yandex.practicum.filmorate.Constants.MAX_FILM_DESCRIPTION_LENGT
 
 @NoArgsConstructor
 @Data
+@Builder
 public class Film {
     private int id;
     @NotBlank(message = "name cannot be empty")
