@@ -31,7 +31,7 @@ public class FriendService {
         userService.checkId(userId);
         userService.checkId(friendId);
         friendStorage.addFriend(userId, friendId);
-        feedService.addFeed(userId, friendId, "FRIEND", "ADD");
+        feedService.addFeed(userId, friendId, FeedEventType.FRIEND, FeedOperation.ADD);
     }
 
     public void deleteFriend(int userId, int friendId) {
@@ -39,7 +39,7 @@ public class FriendService {
         userService.checkId(friendId);
         friendStorage.deleteFriend(userId, friendId);
         friendStorage.deleteFriend(friendId, userId);
-        feedService.addFeed(userId, friendId, "FRIEND", "REMOVE");
+        feedService.addFeed(userId, friendId, FeedEventType.FRIEND, FeedOperation.REMOVE);
     }
 
     public Collection<User> getFriends(int userId) {

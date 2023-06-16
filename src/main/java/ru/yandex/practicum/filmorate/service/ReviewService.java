@@ -16,7 +16,10 @@ public class ReviewService {
     private final FeedService feedService;
 
     @Autowired
-    public ReviewService(@Qualifier("DB") ReviewStorage reviewStorage, UserService userService, FilmService filmService, FeedService feedService) {
+    public ReviewService(@Qualifier("DB") ReviewStorage reviewStorage,
+                         UserService userService,
+                         FilmService filmService,
+                         FeedService feedService) {
         this.reviewStorage = reviewStorage;
         this.userService = userService;
         this.filmService = filmService;
@@ -27,20 +30,20 @@ public class ReviewService {
         userService.checkId(review.getUserId());
         filmService.checkId(review.getFilmId());
         Review result = reviewStorage.add(review);
-        feedService.addFeed(result.getUserId(), result.getId(), "REVIEW", "ADD");
+        feedService.addFeed(result.getUserId(), result.getId(), FeedEventType.REVIEW, FeedOperation.ADD);
         return result;
     }
 
     public Review update(Review review) {
         Review result = reviewStorage.update(review);
-        feedService.addFeed(result.getUserId(), result.getId(), "REVIEW", "UPDATE");
+        feedService.addFeed(result.getUserId(), result.getId(), FeedEventType.REVIEW, FeedOperation.UPDATE);
         return result;
     }
 
     public void delete(int id) {
         Review review = reviewStorage.getById(id);
         reviewStorage.delete(id);
-        feedService.addFeed(review.getUserId(), review.getId(), "REVIEW", "REMOVE");
+        feedService.addFeed(review.getUserId(), review.getId(), FeedEventType.REVIEW, FeedOperation.REMOVE);
     }
 
     public Review getById(int id) {

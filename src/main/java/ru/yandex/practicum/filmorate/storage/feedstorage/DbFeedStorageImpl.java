@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.FindUserException;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.service.FeedEventType;
+import ru.yandex.practicum.filmorate.service.FeedOperation;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.sql.ResultSet;
@@ -27,10 +29,15 @@ public class DbFeedStorageImpl implements FeedStorage {
     }
 
     @Override
-    public void addFeed(int userId, int entityId, String eventType, String operation) {
+    public void addFeed(int userId, int entityId, FeedEventType eventType, FeedOperation operation) {
         String sqlQuery = "INSERT INTO feed(user_id, time_stamp, entity_id," +
                 " event_type, operation) VALUES(?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlQuery, userId, Date.from(Instant.now()), entityId, eventType, operation);
+        jdbcTemplate.update(sqlQuery,
+                userId,
+                Date.from(Instant.now()),
+                entityId,
+                eventType.toString(),
+                operation.toString());
     }
 
     @Override
@@ -47,8 +54,8 @@ public class DbFeedStorageImpl implements FeedStorage {
                 .eventId(rs.getInt("event_id"))
                 .userId(rs.getInt("user_id"))
                 .entityId(rs.getInt("entity_id"))
-                .operation(rs.getString("operation"))
-                .eventType(rs.getString("event_type"))
+                .operation(FeedOperation.valueOf(rs.getString("operation")))
+                .eventType(FeedEventType.valueOf(rs.getString("event_type")))
                 .timestamp(rs.getTimestamp("time_stamp"))
                 .build();
     }

@@ -9,9 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.ReviewService;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.*;
 import ru.yandex.practicum.filmorate.storage.feedstorage.DbFeedStorageImpl;
 
 import java.time.LocalDate;
@@ -26,22 +24,14 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 class DbFeedStorageImplTest {
-
     final DbFeedStorageImpl dbFeedStorage;
-
     final UserService userService;
-
     final ReviewService reviewService;
-
     final FilmService filmService;
-
     User user1;
     User user2;
-
     Review review;
-
     Film film;
-
 
     @BeforeEach
     public void setup() {
@@ -86,12 +76,12 @@ class DbFeedStorageImplTest {
 
     @Test
     void addFeedShouldAddRightFeed() {
-        dbFeedStorage.addFeed(user1.getId(), user2.getId(), "FRIEND", "ADD");
+        dbFeedStorage.addFeed(user1.getId(), user2.getId(), FeedEventType.FRIEND, FeedOperation.ADD);
 
         Optional<Feed> feedsOptional = Optional.ofNullable(dbFeedStorage.getFeedsByUserId(1).get(0));
         assertThat(feedsOptional.get().getUserId()).isEqualTo(1);
-        assertThat(feedsOptional.get().getEventType()).isEqualTo("FRIEND");
-        assertThat(feedsOptional.get().getOperation()).isEqualTo("ADD");
+        assertThat(feedsOptional.get().getEventType()).isEqualTo(FeedEventType.FRIEND);
+        assertThat(feedsOptional.get().getOperation()).isEqualTo(FeedOperation.ADD);
     }
 
     @Test
@@ -101,7 +91,7 @@ class DbFeedStorageImplTest {
         assertThat(optionalFeedsSize).isPresent()
                 .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(0));
 
-        dbFeedStorage.addFeed(user1.getId(), user2.getId(), "FRIEND", "REMOVE");
+        dbFeedStorage.addFeed(user1.getId(), user2.getId(), FeedEventType.FRIEND, FeedOperation.REMOVE);
 
         optionalFeedsSize = Optional.of(dbFeedStorage.getFeedsByUserId(user1.getId()).size());
 

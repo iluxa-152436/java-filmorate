@@ -4,6 +4,8 @@ package ru.yandex.practicum.filmorate.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.service.FeedEventType;
+import ru.yandex.practicum.filmorate.service.FeedOperation;
 
 import java.util.Date;
 
@@ -15,6 +17,6 @@ public class Feed {
     private Date timestamp;
     private int eventId;
     private int entityId;
-    private String eventType;
-    private String operation;
+    private FeedEventType eventType;
+    private FeedOperation operation;
 }

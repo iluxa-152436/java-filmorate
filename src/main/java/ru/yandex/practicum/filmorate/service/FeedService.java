@@ -20,7 +20,7 @@ public class FeedService {
         return feedStorage.getFeedsByUserId(userId);
     }
 
-    public void addFeed(int userId, int entityId, String eventType, String operation) {
+    public void addFeed(int userId, int entityId, FeedEventType eventType, FeedOperation operation) {
         feedStorage.addFeed(userId, entityId, eventType, operation);
     }
 }

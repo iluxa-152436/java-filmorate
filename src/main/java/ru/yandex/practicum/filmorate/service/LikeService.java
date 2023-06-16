@@ -31,14 +31,14 @@ public class LikeService {
         userService.checkId(like.getUserId());
         filmService.checkId(like.getFilmId());
         likeStorage.saveLike(like);
-        feedService.addFeed(like.getUserId(), like.getFilmId(), "LIKE", "ADD");
+        feedService.addFeed(like.getUserId(), like.getFilmId(), FeedEventType.LIKE, FeedOperation.ADD);
     }
 
     public void deleteLike(Like like) {
         userService.checkId(like.getUserId());
         filmService.checkId(like.getFilmId());
         likeStorage.deleteLike(like);
-        feedService.addFeed(like.getUserId(), like.getFilmId(), "LIKE", "REMOVE");
+        feedService.addFeed(like.getUserId(), like.getFilmId(), FeedEventType.LIKE, FeedOperation.REMOVE);
     }
 
     public List<Film> getSortedFilms(long limit, Integer genreId, String releaseDate) {
