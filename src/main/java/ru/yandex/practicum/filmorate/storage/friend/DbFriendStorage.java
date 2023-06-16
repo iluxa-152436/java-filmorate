@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.FindUserException;
-import ru.yandex.practicum.filmorate.service.FeedService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,12 +16,9 @@ import java.util.Set;
 public class DbFriendStorage implements FriendStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    private final FeedService feedService;
-
     @Autowired
-    public DbFriendStorage(JdbcTemplate jdbcTemplate, FeedService feedService) {
+    public DbFriendStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.feedService = feedService;
     }
 
     @Override
