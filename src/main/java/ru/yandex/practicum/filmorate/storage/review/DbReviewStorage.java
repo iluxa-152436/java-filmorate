@@ -141,7 +141,9 @@ public class DbReviewStorage implements ReviewStorage {
 
     @Override
     public void containsReview(int id) {
-        Integer rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reviews WHERE review_id=?", Integer.class, id);
+        Integer rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reviews WHERE review_id=?",
+                Integer.class,
+                id);
         if (rowCount == null) {
             throw new NotFoundInDbException("Отзыва с id=" + id + " не существует");
         }
