@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.controller.FilmSortingParameter;
 import ru.yandex.practicum.filmorate.exception.FindFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -96,9 +97,9 @@ public class FilmService {
         storage.deleteFilmById(filmId);
     }
 
-    public List<Film> getFilmsOfDirectorById(Integer directorId, String sortBy) {
+    public List<Film> getFilmsOfDirectorById(Integer directorId, FilmSortingParameter sortBy) {
         List<Film> films = directorService.getFilmsOfDirectorById(directorId);
-        if (sortBy.equals("year")) {
+        if (sortBy.equals(FilmSortingParameter.year)) {
             return films.stream().sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
         }
         return films.stream().sorted(Comparator.comparingInt((Film film) ->

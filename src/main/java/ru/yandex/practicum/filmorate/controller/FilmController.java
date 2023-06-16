@@ -79,10 +79,11 @@ public class FilmController {
     }
 
     @GetMapping("/director/{directorId}")
-    public List<Film> getFilmsOfDirectorById(@PathVariable Integer directorId, @RequestParam String sortBy) {
+    public List<Film> getFilmsOfDirectorById(@PathVariable Integer directorId,
+                                             @RequestParam FilmSortingParameter sortBy) {
         switch (sortBy) {
-            case "year":
-            case "likes":
+            case year:
+            case likes:
                 log.debug("Requested films of director with id = {}, sort by {}", directorId, sortBy);
                 return filmService.getFilmsOfDirectorById(directorId, sortBy);
             default:
