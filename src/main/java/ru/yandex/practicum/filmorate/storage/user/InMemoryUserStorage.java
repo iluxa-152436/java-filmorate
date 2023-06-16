@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -58,6 +59,11 @@ public class InMemoryUserStorage implements UserStorage {
 
     }
 
+
+    @Override
+    public List<Film> getRecommendations(Integer id) {
+        return List.of();
+    }
 
     @Override
     public User getUser(int userId) {
