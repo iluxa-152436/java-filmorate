@@ -16,11 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.exception.ValidateFilmException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.DirectorService;
-import ru.yandex.practicum.filmorate.model.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -336,7 +331,7 @@ class FilmControllerTest {
         filmService.createFilm(film2);
 
         ResponseEntity<Film[]> response = restTemplate.getForEntity("http://localhost:" + port +
-                        "/films/director/1?sortBy=year", Film[].class);
+                "/films/director/1?sortBy=year", Film[].class);
         assertTrue(response.getStatusCode().is2xxSuccessful());
         Film[] films = response.getBody();
         assertEquals(1, films[1].getId());
