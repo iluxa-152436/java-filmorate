@@ -35,12 +35,11 @@ public class DbFeedStorageImpl implements FeedStorage {
 
     @Override
     public List<Feed> getFeedsByUserId(int userId) {
-        if (userStorage.containsUser(userId)) {
-            String sqlQuery = "SELECT * FROM feed WHERE user_id = ?";
-            return jdbcTemplate.query(sqlQuery, this::makeFeed, userId);
-        } else {
+        if (!userStorage.containsUser(userId)) {
             throw new FindUserException("User с id = " + userId + " получение ленты невозможно.");
         }
+        String sqlQuery = "SELECT * FROM feed WHERE user_id = ?";
+        return jdbcTemplate.query(sqlQuery, this::makeFeed, userId);
     }
 
     private Feed makeFeed(ResultSet rs, int rowNum) throws SQLException {

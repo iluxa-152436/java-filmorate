@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.FindDirectorException;
-import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.exception.FindFilmException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
@@ -51,12 +51,8 @@ public class DbFilmStorage implements FilmStorage {
                     film.getDuration(),
                     null);
         }
-        if (film.getGenres() != null) {
-            saveFilmGenre(film);
-        }
-        if (film.getDirectors() != null) {
-            saveFilmDirector(film);
-        }
+        saveFilmGenre(film);
+        saveFilmDirector(film);
     }
 
     @Override
@@ -80,15 +76,10 @@ public class DbFilmStorage implements FilmStorage {
                     null,
                     film.getId());
         }
-
         deleteFilmGenre(film);
-        if (film.getGenres() != null) {
-            saveFilmGenre(film);
-        }
+        saveFilmGenre(film);
         deleteFilmDirector(film);
-        if (film.getDirectors() != null) {
-            saveFilmDirector(film);
-        }
+        saveFilmDirector(film);
     }
 
     private void deleteFilmGenre(Film film) {
@@ -98,7 +89,7 @@ public class DbFilmStorage implements FilmStorage {
 
     private void saveFilmGenre(Film film) {
         log.debug("Film contains genres: {}", film.getGenres());
-        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+        if (!film.getGenres().isEmpty()) {
             String sqlFilmGenre = "INSERT INTO film_genre(film_id, genre_id) VALUES(?,?)";
             for (Genre genre : film.getGenres()) {
                 jdbcTemplate.update(sqlFilmGenre, film.getId(), genre.getId());
@@ -115,7 +106,7 @@ public class DbFilmStorage implements FilmStorage {
         if (!film.getDirectors().isEmpty()) {
             String sqlFilmDirector = "INSERT INTO film_director (film_id, director_id) VALUES(?,?)";
             for (Director director : film.getDirectors()) {
-                if (isContainsDirector(director.getId())) {
+                if (isDirectorExists(director.getId())) {
                     jdbcTemplate.update(sqlFilmDirector, film.getId(), director.getId());
                 } else {
                     throw new FindDirectorException("Director with id = " + director.getId() + " not found");
@@ -124,7 +115,7 @@ public class DbFilmStorage implements FilmStorage {
         }
     }
 
-    private boolean isContainsDirector(Integer id) {
+    private boolean isDirectorExists(Integer id) {
         String sqlQuery = "SELECT COUNT(*) FROM directors WHERE director_id=?";
         return jdbcTemplate.queryForObject(sqlQuery, Integer.class, id) == 1;
     }

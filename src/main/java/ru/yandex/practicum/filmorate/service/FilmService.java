@@ -61,7 +61,6 @@ public class FilmService {
             film.setMpa(mpaRatingService.getMpaRating(film.getMpa().getId()));
             log.debug("New value = {}", film.getMpa());
         }
-
     }
 
     public Film updateFilm(Film film) {
