@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import ru.yandex.practicum.filmorate.exception.FindDirectorException;
 import ru.yandex.practicum.filmorate.exception.FindFilmException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -89,7 +90,7 @@ public class DbFilmStorage implements FilmStorage {
 
     private void saveFilmGenre(Film film) {
         log.debug("Film contains genres: {}", film.getGenres());
-        if (!film.getGenres().isEmpty()) {
+        if (!CollectionUtils.isEmpty(film.getGenres())) {
             String sqlFilmGenre = "INSERT INTO film_genre(film_id, genre_id) VALUES(?,?)";
             for (Genre genre : film.getGenres()) {
                 jdbcTemplate.update(sqlFilmGenre, film.getId(), genre.getId());
@@ -103,7 +104,7 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     private void saveFilmDirector(Film film) {
-        if (!film.getDirectors().isEmpty()) {
+        if (!CollectionUtils.isEmpty(film.getDirectors())) {
             String sqlFilmDirector = "INSERT INTO film_director (film_id, director_id) VALUES(?,?)";
             for (Director director : film.getDirectors()) {
                 if (isDirectorExists(director.getId())) {
