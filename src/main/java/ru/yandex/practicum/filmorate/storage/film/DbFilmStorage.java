@@ -291,10 +291,8 @@ public class DbFilmStorage implements FilmStorage {
         List<Film> commonFilms = jdbcTemplate.query(sqlQuery,
                 (rs, rowNum) -> {
 
-
                     MpaRating mpaRating = new MpaRating(rs.getInt("mpa_rating_id"),
                             rs.getString("mpa_rating_name"));
-
 
                     String sqlQueryFilmGenres = "SELECT g.genre_id, g.name FROM films f " +
                             "JOIN film_genre fg " +
@@ -320,4 +318,3 @@ public class DbFilmStorage implements FilmStorage {
         return commonFilms;
     }
 }
-

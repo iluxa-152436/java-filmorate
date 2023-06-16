@@ -16,7 +16,6 @@ import javax.validation.ConstraintViolationException;
 @Slf4j
 @RestControllerAdvice
 public class ExceptionHandlerController {
-
     @ExceptionHandler(value = {FindFilmException.class,
             FindUserException.class,
             EmptyResultDataAccessException.class,

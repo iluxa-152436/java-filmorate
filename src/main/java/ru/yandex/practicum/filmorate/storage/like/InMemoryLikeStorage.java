@@ -59,6 +59,11 @@ public class InMemoryLikeStorage implements LikeStorage {
         //TODO сделать реализацию
     }
 
+    @Override
+    public List<Integer> getSortedByLikesFilteredByFilmIds(String query, List<String> by) {
+        return null;
+    }
+
     public void addFilmToLikeList(Integer filmId) {
         filmLikes.put(filmId, 0);
     }

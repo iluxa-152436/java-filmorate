@@ -63,4 +63,15 @@ public class LikeService {
         }
         return sortedFilms;
     }
+
+    public List<Film> getSortedAndFilteredFilms(String query, List<String> by) {
+        log.debug("query = {}, search in fields = {}", query, by);
+        List<Integer> sortedFilmIds = likeStorage.getSortedByLikesFilteredByFilmIds(query, by);
+        log.debug("sortedFilmIds {}", sortedFilmIds);
+        List<Film> sortedFilms = new ArrayList<>();
+        for (Integer filmId : sortedFilmIds) {
+            sortedFilms.add(filmService.getFilm(filmId));
+        }
+        return sortedFilms;
+    }
 }

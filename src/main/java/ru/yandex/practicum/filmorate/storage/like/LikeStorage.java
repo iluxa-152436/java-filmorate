@@ -16,4 +16,6 @@ public interface LikeStorage {
     List<Integer> getSortedFilmLikes(long limit, String releaseDate);
 
     List<Integer> getSortedFilmLikes(long limit, int genreId);
+
+    List<Integer> getSortedByLikesFilteredByFilmIds(String query, List<String> by);
 }

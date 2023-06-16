@@ -36,7 +36,7 @@ public class DirectorControllerTest {
 
     @Test
     void testShouldReturnStatus200WhenCallMethodPost() throws Exception {
-        Director director = new Director(null, "Dir");
+        Director director = new Director(1, "Dir");
         String json = mapper.writeValueAsString(director);
         MvcResult result = mockMvc.perform(post("/directors").contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isOk()).andReturn();
@@ -46,8 +46,8 @@ public class DirectorControllerTest {
 
     @Test
     void testShouldReturnStatus200AndDirectorWhenCallMethodGet() throws Exception {
-        Director director = new Director(null, "Dir");
-        Director director2 = new Director(null, "Dir2");
+        Director director = new Director(1, "Dir");
+        Director director2 = new Director(2, "Dir2");
         String json = mapper.writeValueAsString(director);
         String json2 = mapper.writeValueAsString(director2);
         mockMvc.perform(post("/directors").contentType(MediaType.APPLICATION_JSON)
@@ -67,7 +67,7 @@ public class DirectorControllerTest {
 
     @Test
     void testShouldReturnStatus200AndDirectorWhenCallMethodGetById() throws Exception {
-        Director director = new Director(null, "Dir");
+        Director director = new Director(1, "Dir");
         String json = mapper.writeValueAsString(director);
         mockMvc.perform(post("/directors").contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isOk());
@@ -81,7 +81,7 @@ public class DirectorControllerTest {
 
     @Test
     void testShouldReturnStatus200AndUpdatedDirectorWhenCallMethodPut() throws Exception {
-        Director director = new Director(null, "Dir");
+        Director director = new Director(1, "Dir");
         String json = mapper.writeValueAsString(director);
         mockMvc.perform(post("/directors").contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isOk());
@@ -105,7 +105,7 @@ public class DirectorControllerTest {
 
     @Test
     void testShouldReturnStatus200WhenCallMethodDelete() throws Exception {
-        Director director = new Director(null, "Dir");
+        Director director = new Director(1, "Dir");
         String json = mapper.writeValueAsString(director);
         mockMvc.perform(post("/directors").contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isOk());
