@@ -23,7 +23,7 @@ public class DbFriendStorage implements FriendStorage {
 
     @Override
     public void addFriend(int userId, int friendId) {
-        String sql = "insert into friends(user_id, friend_id) values(?,?)";
+        String sql = "INSERT INTO friends(user_id, friend_id) VALUES(?,?)";
         try {
             jdbcTemplate.update(sql, userId, friendId);
         } catch (DataAccessException e) {
@@ -33,7 +33,7 @@ public class DbFriendStorage implements FriendStorage {
 
     @Override
     public void deleteFriend(int userId, int friendId) {
-        String sql = "delete from friends where user_id=? and friend_id=?";
+        String sql = "DELETE FROM friends WHERE user_id=? AND friend_id=?";
         try {
             jdbcTemplate.update(sql, userId, friendId);
         } catch (DataAccessException e) {
@@ -43,7 +43,7 @@ public class DbFriendStorage implements FriendStorage {
 
     @Override
     public Set<Integer> getFriends(int userId) {
-        String sql = "select friend_id from friends where user_id=?";
+        String sql = "SELECT friend_id FROM friends WHERE user_id=?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
         return makeFriendIdsSet(rowSet);
     }
@@ -59,7 +59,7 @@ public class DbFriendStorage implements FriendStorage {
 
     @Override
     public boolean hasFriends(int userId) {
-        String sql = "select count(*) from friends where user_id=?";
+        String sql = "SELECT COUNT(*) FROM friends WHERE user_id=?";
         return jdbcTemplate.queryForObject(sql, Integer.class, userId) >= 1;
     }
 

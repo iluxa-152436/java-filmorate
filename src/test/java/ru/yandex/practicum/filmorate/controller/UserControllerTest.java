@@ -303,5 +303,4 @@ class UserControllerTest {
                 .isPresent()
                 .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
     }
-
 }

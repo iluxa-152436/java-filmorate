@@ -35,14 +35,14 @@ class DbFriendStorageTest {
     @Sql("classpath:test_data.sql")
     void addFriend() {
         friendStorage.addFriend(1, 2);
-        assertEquals(2, jdbcTemplate.queryForObject("select count(*) from friends", Integer.class));
+        assertEquals(2, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM friends", Integer.class));
     }
 
     @Test
     @Sql("classpath:test_data.sql")
     void deleteFriend() {
         friendStorage.deleteFriend(2, 1);
-        assertEquals(0, jdbcTemplate.queryForObject("select count(*) from friends", Integer.class));
+        assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM friends", Integer.class));
     }
 
     @Test

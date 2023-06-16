@@ -2,12 +2,10 @@ package ru.yandex.practicum.filmorate.storage.feedstorage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.FindUserException;
 import ru.yandex.practicum.filmorate.model.Feed;
-import ru.yandex.practicum.filmorate.service.ReviewService;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.sql.ResultSet;
@@ -19,16 +17,13 @@ import java.util.List;
 @Repository
 public class DbFeedStorageImpl implements FeedStorage {
     private final JdbcTemplate jdbcTemplate;
-
     private final UserStorage userStorage;
-    private final ReviewService reviewService;
 
 
     @Autowired
-    public DbFeedStorageImpl(JdbcTemplate jdbcTemplate, @Qualifier("DB") UserStorage userStorage, @Lazy ReviewService reviewService) {
+    public DbFeedStorageImpl(JdbcTemplate jdbcTemplate, @Qualifier("DB") UserStorage userStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.userStorage = userStorage;
-        this.reviewService = reviewService;
     }
 
     @Override

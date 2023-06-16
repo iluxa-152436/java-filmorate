@@ -43,20 +43,17 @@ public class InMemoryLikeStorage implements LikeStorage {
 
     @Override
     public List<Integer> getSortedFilmLikes(long limit, int genreId, String releaseDate) {
-        return null;
-        //TODO сделать реализацию
+        throw new UnsupportedOperationException("Не поддерживается в InMemory");
     }
 
     @Override
     public List<Integer> getSortedFilmLikes(long limit, String releaseDate) {
-        return null;
-        //TODO сделать реализацию
+        throw new UnsupportedOperationException("Не поддерживается в InMemory");
     }
 
     @Override
     public List<Integer> getSortedFilmLikes(long limit, int genreId) {
-        return null;
-        //TODO сделать реализацию
+        throw new UnsupportedOperationException("Не поддерживается в InMemory");
     }
 
     @Override

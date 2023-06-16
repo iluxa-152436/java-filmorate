@@ -58,16 +58,16 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(Integer userId, Integer friendId) {
-        return List.of();
+        throw new UnsupportedOperationException("Не поддерживается в InMemory");
     }
 
     @Override
     public void deleteFilmById(int filmId) {
-
+        throw new UnsupportedOperationException("Не поддерживается в InMemory");
     }
 
     @Override
     public int getNumberOfLikesByFilmId(int filmId) {
-        return 0;
+        throw new UnsupportedOperationException("Не поддерживается в InMemory");
     }
 }

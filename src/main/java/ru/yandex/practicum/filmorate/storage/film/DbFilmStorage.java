@@ -32,8 +32,8 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public void saveFilm(Film film) {
-        String sqlFilms = "insert into films(film_id, name, release_date, description, duration, mpa_rating_id) " +
-                "values(?,?,?,?,?,?)";
+        String sqlFilms = "INSERT INTO films(film_id, name, release_date, description, duration, mpa_rating_id) " +
+                "VALUES(?,?,?,?,?,?)";
         if (film.getMpa() != null) {
             jdbcTemplate.update(sqlFilms,
                     film.getId(),
@@ -61,8 +61,8 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public void updateFilm(Film film) {
-        String sqlFilm = "update films set name=?, release_date=?, description=?, duration=?, mpa_rating_id=? " +
-                "where film_id=?";
+        String sqlFilm = "UPDATE films SET name=?, release_date=?, description=?, duration=?, mpa_rating_id=? " +
+                "WHERE film_id=?";
         if (film.getMpa() != null) {
             jdbcTemplate.update(sqlFilm,
                     film.getName(),
@@ -92,14 +92,14 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     private void deleteFilmGenre(Film film) {
-        String sqlRemoveFilmGenre = "delete from film_genre where film_id=?";
+        String sqlRemoveFilmGenre = "DELETE FROM film_genre WHERE film_id=?";
         jdbcTemplate.update(sqlRemoveFilmGenre, film.getId());
     }
 
     private void saveFilmGenre(Film film) {
         log.debug("Film contains genres: {}", film.getGenres());
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
-            String sqlFilmGenre = "insert into film_genre(film_id, genre_id) values(?,?)";
+            String sqlFilmGenre = "INSERT INTO film_genre(film_id, genre_id) VALUES(?,?)";
             for (Genre genre : film.getGenres()) {
                 jdbcTemplate.update(sqlFilmGenre, film.getId(), genre.getId());
             }
@@ -107,13 +107,13 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     private void deleteFilmDirector(Film film) {
-        String sqlRemoveFilmDirector = "delete from film_director where film_id=?";
+        String sqlRemoveFilmDirector = "DELETE FROM film_director WHERE film_id=?";
         jdbcTemplate.update(sqlRemoveFilmDirector, film.getId());
     }
 
     private void saveFilmDirector(Film film) {
         if (!film.getDirectors().isEmpty()) {
-            String sqlFilmDirector = "insert into film_director (film_id, director_id) values(?,?)";
+            String sqlFilmDirector = "INSERT INTO film_director (film_id, director_id) VALUES(?,?)";
             for (Director director : film.getDirectors()) {
                 if (isContainsDirector(director.getId())) {
                     jdbcTemplate.update(sqlFilmDirector, film.getId(), director.getId());
@@ -125,65 +125,65 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     private boolean isContainsDirector(Integer id) {
-        String sqlQuery = "select count(*) from directors where director_id=?";
+        String sqlQuery = "SELECT COUNT(*) FROM directors WHERE director_id=?";
         return jdbcTemplate.queryForObject(sqlQuery, Integer.class, id) == 1;
     }
 
     @Override
     public List<Film> getFilms() {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("select f.film_id as film_id, " +
-                "f.name as film_name, " +
-                "f.release_date as release_date, " +
-                "f.description as description, " +
-                "f.duration as duration, " +
-                "f.mpa_rating_id as mpa_rating_id, " +
-                "m.name as mpa_name, " +
-                "g.genre_id as genre_id, " +
-                "g.name as genre_name, " +
-                "d.director_id as director_id, " +
-                "d.name as director_name " +
-                "from films as f " +
-                "left join film_genre as fg on f.film_id = fg.film_id " +
-                "left join genres as g on fg.genre_id = g.genre_id " +
-                "left join mpa_ratings as m on f.mpa_rating_id = m.mpa_rating_id " +
-                "left join film_director as fd on f.film_id = fd.film_id " +
-                "left join directors as d on fd.director_id = d.director_id " +
-                "order by genre_id, director_id");
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT f.film_id AS film_id, " +
+                "f.name AS film_name, " +
+                "f.release_date AS release_date, " +
+                "f.description AS description, " +
+                "f.duration AS duration, " +
+                "f.mpa_rating_id AS mpa_rating_id, " +
+                "m.name AS mpa_name, " +
+                "g.genre_id AS genre_id, " +
+                "g.name AS genre_name, " +
+                "d.director_id AS director_id, " +
+                "d.name AS director_name " +
+                "FROM films AS f " +
+                "LEFT JOIN film_genre AS fg ON f.film_id = fg.film_id " +
+                "LEFT JOIN genres AS g ON fg.genre_id = g.genre_id " +
+                "LEFT JOIN mpa_ratings AS m ON f.mpa_rating_id = m.mpa_rating_id " +
+                "LEFT JOIN film_director AS fd ON f.film_id = fd.film_id " +
+                "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
+                "ORDER BY genre_id, director_id");
         return makeFilmList(rowSet);
     }
 
     @Override
     public boolean containsFilm(int filmId) {
-        return jdbcTemplate.queryForObject("select count(*) from films where film_id=?", Integer.class, filmId) == 1;
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM films WHERE film_id=?", Integer.class, filmId) == 1;
     }
 
     @Override
     public Film getFilm(int filmId) {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("select f.film_id as film_id, " +
-                "f.name as film_name, " +
-                "f.release_date as release_date, " +
-                "f.description as description, " +
-                "f.duration as duration, " +
-                "f.mpa_rating_id as mpa_rating_id, " +
-                "m.name as mpa_name, " +
-                "g.genre_id as genre_id, " +
-                "g.name as genre_name, " +
-                "d.director_id as director_id, " +
-                "d.name as director_name " +
-                "from films as f " +
-                "left join film_genre as fg on f.film_id = fg.film_id " +
-                "left join genres as g on fg.genre_id = g.genre_id " +
-                "left join mpa_ratings as m on f.mpa_rating_id = m.mpa_rating_id " +
-                "left join film_director as fd on f.film_id = fd.film_id " +
-                "left join directors as d on fd.director_id = d.director_id " +
-                "where f.film_id=? " +
-                "order by film_id, genre_id", filmId);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT f.film_id AS film_id, " +
+                "f.name AS film_name, " +
+                "f.release_date AS release_date, " +
+                "f.description AS description, " +
+                "f.duration AS duration, " +
+                "f.mpa_rating_id AS mpa_rating_id, " +
+                "m.name AS mpa_name, " +
+                "g.genre_id AS genre_id, " +
+                "g.name AS genre_name, " +
+                "d.director_id AS director_id, " +
+                "d.name AS director_name " +
+                "FROM films AS f " +
+                "LEFT JOIN film_genre AS fg ON f.film_id = fg.film_id " +
+                "LEFT JOIN genres AS g ON fg.genre_id = g.genre_id " +
+                "LEFT JOIN mpa_ratings AS m ON f.mpa_rating_id = m.mpa_rating_id " +
+                "LEFT JOIN film_director AS fd ON f.film_id = fd.film_id " +
+                "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
+                "WHERE f.film_id=? " +
+                "ORDER BY film_id, genre_id", filmId);
         return makeFilmList(rowSet).get(0);
     }
 
     @Override
     public int getNextId() {
-        return jdbcTemplate.query("select count(film_id), max(film_id), from films",
+        return jdbcTemplate.query("SELECT COUNT(film_id), MAX(film_id), FROM films",
                 (rs, rowNum) -> makeNextId(rs)).get(0);
     }
 
@@ -197,7 +197,7 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public int getNumberOfLikesByFilmId(int filmId) {
-        String sqlQuery = "select count(user_id) as count_of_likes from likes where film_id = ?";
+        String sqlQuery = "SELECT COUNT(user_id) AS count_of_likes FROM likes WHERE film_id = ?";
         return jdbcTemplate.queryForObject(sqlQuery, (rs, rowNum) -> rs.getInt("count_of_likes"), filmId);
     }
 
@@ -275,13 +275,13 @@ public class DbFilmStorage implements FilmStorage {
                 "       INTERSECT " +
                 "   SELECT film_id FROM likes WHERE user_id = ? " +
                 ") " +
-                "SELECT f.film_id as film_id," +
-                "      f.name as film_name," +
-                "      f.release_date as release_date," +
-                "      f.description as description," +
-                "      f.duration as duration," +
-                "      f.mpa_rating_id as mpa_rating_id," +
-                "      m.name as mpa_rating_name" +
+                "SELECT f.film_id AS film_id," +
+                "      f.name AS film_name," +
+                "      f.release_date AS release_date," +
+                "      f.description AS description," +
+                "      f.duration AS duration," +
+                "      f.mpa_rating_id AS mpa_rating_id," +
+                "      m.name AS mpa_rating_name" +
                 " FROM common_films c" +
                 "     JOIN films f " +
                 "     ON c.film_id=f.film_id " +
@@ -311,7 +311,8 @@ public class DbFilmStorage implements FilmStorage {
                             rs.getDate("release_date").toLocalDate(),
                             rs.getInt("duration"),
                             new HashSet<>(genres),
-                            mpaRating
+                            mpaRating,
+                            null
                     );
                     return film;
                 }, userId, friendId);

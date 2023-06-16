@@ -34,7 +34,7 @@ public class DbUserStorage implements UserStorage {
 
     @Override
     public void saveUser(User user) {
-        String sqlQuery = "insert into app_users(user_id, email, login, name, birthday) values (?,?,?,?,?)";
+        String sqlQuery = "INSERT INTO app_users(user_id, email, login, name, birthday) VALUES (?,?,?,?,?)";
         jdbcTemplate.update(sqlQuery,
                 user.getId(),
                 user.getEmail(),
@@ -45,7 +45,7 @@ public class DbUserStorage implements UserStorage {
 
     @Override
     public void updateUser(User user) {
-        String sqlQuery = "update app_users set email=?, login=?, name=?, birthday=? where user_id = ?";
+        String sqlQuery = "UPDATE app_users SET email=?, login=?, name=?, birthday=? WHERE user_id = ?";
         jdbcTemplate.update(sqlQuery,
                 user.getEmail(),
                 user.getLogin(),
@@ -56,34 +56,36 @@ public class DbUserStorage implements UserStorage {
 
     @Override
     public List<User> getAllUsers() {
-        String sqlQuery = "select * from app_users";
+        String sqlQuery = "SELECT * FROM app_users";
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs));
     }
 
     @Override
     public List<User> getUsers(Set<Integer> userIds) {
         SqlParameterSource parameters = new MapSqlParameterSource("ids", userIds);
-        return namedParameterJdbcTemplate.query("select * from app_users where user_id in (:ids)",
+        return namedParameterJdbcTemplate.query("SELECT * FROM app_users WHERE user_id in (:ids)",
                 parameters,
                 (rs, rowNum) -> makeUser(rs));
     }
 
     @Override
     public User getUser(int userId) {
-        return jdbcTemplate.queryForObject("select * from app_users where user_id=?",
+        return jdbcTemplate.queryForObject("SELECT * FROM app_users WHERE user_id=?",
                 (rs, rowNum) -> makeUser(rs),
                 userId);
     }
 
     @Override
     public boolean containsUser(int userId) {
-        Integer count = jdbcTemplate.queryForObject("select count(*) from app_users where user_id=?", Integer.class, userId);
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM app_users WHERE user_id=?",
+                Integer.class,
+                userId);
         return count == 1;
     }
 
     @Override
     public int getNexId() {
-        return jdbcTemplate.query("select count(user_id), max(user_id), from app_users",
+        return jdbcTemplate.query("SELECT COUNT(user_id), MAX(user_id), FROM app_users",
                 (rs, rowNum) -> makeNextId(rs)).get(0);
     }
 
@@ -99,7 +101,7 @@ public class DbUserStorage implements UserStorage {
     public List<Film> getRecommendations(Integer id) {
         String sqlQuery =
                 "WITH user_with_max_common_likes AS (" +
-                        "                  SELECT u1.user_id, count(u2.film_id) c FROM likes u1 LEFT JOIN likes u2 " +
+                        "                  SELECT u1.user_id, COUNT(u2.film_id) c FROM likes u1 LEFT JOIN likes u2 " +
                         "                        ON u1.film_id = u2.film_id  " +
                         "                        WHERE u2.user_id = " + id + " AND u1.USER_ID <> " + id +
                         "                  GROUP BY u1.user_id  " +
@@ -111,13 +113,13 @@ public class DbUserStorage implements UserStorage {
                         "                WHERE l.FILM_ID NOT IN (SELECT DISTINCT film_id FROM likes WHERE USER_ID = " + id + ") " +
                         "                ) " +
                         "                " +
-                        "                SELECT o.film_id as film_id, " +
-                        "                         f.name as film_name, " +
-                        "                         f.release_date as release_date, " +
-                        "                         f.description as description, " +
-                        "                         f.duration as duration, " +
-                        "                         f.mpa_rating_id as mpa_rating_id, " +
-                        "                         m.name as mpa_rating_name " +
+                        "                SELECT o.film_id AS film_id, " +
+                        "                         f.name AS film_name, " +
+                        "                         f.release_date AS release_date, " +
+                        "                         f.description AS description, " +
+                        "                         f.duration AS duration, " +
+                        "                         f.mpa_rating_id AS mpa_rating_id, " +
+                        "                         m.name AS mpa_rating_name " +
                         "                FROM user_films o  " +
                         "                           JOIN films f  " +
                         "                           ON o.film_id = f.film_id " +
@@ -145,8 +147,8 @@ public class DbUserStorage implements UserStorage {
 
         recommendedFilms.stream().forEach(film -> {
             System.out.println(film.toString());
-            String sqlQueryFilmGenres = "SELECT fg.genre_id as genre_id, " +
-                    "g.name as name FROM films f " +
+            String sqlQueryFilmGenres = "SELECT fg.genre_id AS genre_id, " +
+                    "g.name AS name FROM films f " +
                     "JOIN film_genre fg " +
                     "ON f.film_id=fg.film_id " +
                     "JOIN genres g " +
@@ -168,7 +170,7 @@ public class DbUserStorage implements UserStorage {
 
 
     private Integer makeNextId(ResultSet rs) throws SQLException {
-        Integer nextId = 1;
+        int nextId = 1;
         if (rs.getInt(1) >= 1) {
             nextId = rs.getInt(2) + 1;
         }
@@ -176,7 +178,7 @@ public class DbUserStorage implements UserStorage {
     }
 
     private User makeUser(ResultSet rs) throws SQLException {
-        Integer id = rs.getInt("user_id");
+        int id = rs.getInt("user_id");
         String email = rs.getString("email");
         String login = rs.getString("login");
         String name = rs.getString("name");

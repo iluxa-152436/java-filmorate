@@ -20,15 +20,9 @@ import static ru.yandex.practicum.filmorate.controller.UserControllerTest.getUse
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FeedControllerTest {
-
     final UserService userService;
-
-
     final FriendService friendService;
-
-
     final FeedService feedService;
-
 
     @Test
     void getFeedsByUserIdShouldReturnFeed() {
@@ -48,6 +42,5 @@ public class FeedControllerTest {
         optionalFeedsSize = Optional.of(feedService.getFeedsByUserId(1).size());
         assertThat(optionalFeedsSize).isPresent()
                 .hasValueSatisfying(size -> AssertionsForClassTypes.assertThat(size).isEqualTo(2));
-
     }
 }

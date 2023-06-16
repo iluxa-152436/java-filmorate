@@ -27,61 +27,61 @@ public class DbLikeStorage implements LikeStorage {
 
     @Override
     public List<Integer> getSortedFilmLikes(long limit, int genreId, String releaseDate) {
-        String sql = "select f.film_id, count(l.user_id) from films as f " +
-                "left join likes as l on f.film_id=l.film_id " +
-                "left join film_genre as fg on f.film_id=fg.film_id " +
-                "where fg.genre_id = ? and EXTRACT(YEAR FROM f.release_date) = ? " +
-                "group by f.film_id " +
-                "order by count(l.user_id) desc " +
-                "limit ?";
+        String sql = "SELECT f.film_id, COUNT(l.user_id) FROM films AS f " +
+                "LEFT JOIN likes AS l ON f.film_id=l.film_id " +
+                "LEFT JOIN film_genre AS fg ON f.film_id=fg.film_id " +
+                "WHERE fg.genre_id = ? AND EXTRACT(YEAR FROM f.release_date) = ? " +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(l.user_id) DESC " +
+                "LIMIT ?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, genreId, releaseDate, limit);
         return makeFilmLikesList(rowSet);
     }
 
     @Override
     public List<Integer> getSortedFilmLikes(long limit, String releaseDate) {
-        String sql = "select f.film_id, count(l.user_id) from films as f " +
-                "left join likes as l on f.film_id=l.film_id " +
-                "where EXTRACT(YEAR FROM f.release_date) = ? " +
-                "group by f.film_id " +
-                "order by count(l.user_id) desc " +
-                "limit ?";
+        String sql = "SELECT f.film_id, COUNT(l.user_id) FROM films AS f " +
+                "LEFT JOIN likes AS l ON f.film_id=l.film_id " +
+                "WHERE EXTRACT(YEAR FROM f.release_date) = ? " +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(l.user_id) DESC " +
+                "LIMIT ?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, releaseDate, limit);
         return makeFilmLikesList(rowSet);
     }
 
     @Override
     public List<Integer> getSortedFilmLikes(long limit, int genreId) {
-        String sql = "select f.film_id, count(l.user_id) from films as f " +
-                "left join likes as l on f.film_id=l.film_id " +
-                "left join film_genre as fg on f.film_id=fg.film_id " +
-                "where fg.genre_id = ? " +
-                "group by f.film_id " +
-                "order by count(l.user_id) desc " +
-                "limit ?";
+        String sql = "SELECT f.film_id, COUNT(l.user_id) FROM films AS f " +
+                "LEFT JOIN likes AS l ON f.film_id=l.film_id " +
+                "LEFT JOIN film_genre AS fg ON f.film_id=fg.film_id " +
+                "WHERE fg.genre_id = ? " +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(l.user_id) DESC " +
+                "LIMIT ?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, genreId, limit);
         return makeFilmLikesList(rowSet);
     }
 
     @Override
     public void saveLike(Like like) {
-        String sql = "merge into likes(user_id, film_id) values(?,?)";
+        String sql = "MERGE INTO likes(user_id, film_id) VALUES(?,?)";
         jdbcTemplate.update(sql, like.getUserId(), like.getFilmId());
     }
 
     @Override
     public void deleteLike(Like like) {
-        String sql = "delete from likes where user_id=? and film_id=?";
+        String sql = "DELETE FROM likes WHERE user_id=? AND film_id=?";
         jdbcTemplate.update(sql, like.getUserId(), like.getFilmId());
     }
 
     @Override
     public List<Integer> getSortedFilmLikes(long limit) {
-        String sql = "select f.film_id, count(l.user_id) from films as f " +
-                "left join likes as l on f.film_id=l.film_id " +
-                "group by f.film_id " +
-                "order by count(l.user_id) desc " +
-                "limit ?";
+        String sql = "SELECT f.film_id, COUNT(l.user_id) FROM films AS f " +
+                "LEFT JOIN likes AS l ON f.film_id=l.film_id " +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(l.user_id) DESC " +
+                "LIMIT ?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, limit);
         return makeFilmLikesList(rowSet);
     }
@@ -91,22 +91,22 @@ public class DbLikeStorage implements LikeStorage {
         SqlParameterSource namedParameters = new MapSqlParameterSource("query",
                 "%" + query.toLowerCase() + "%");
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("select f.film_id, count(l.user_id) ");
-        stringBuilder.append("from films as f ");
-        stringBuilder.append("left join likes as l on f.film_id = l.film_id ");
+        stringBuilder.append("SELECT f.film_id, COUNT(l.user_id) ");
+        stringBuilder.append("FROM films AS f ");
+        stringBuilder.append("LEFT JOIN likes AS l ON f.film_id = l.film_id ");
         if (by.contains("director") && by.contains("title")) {
-            stringBuilder.append("left join film_director as fd on f.film_id = fd.film_id ");
-            stringBuilder.append("left join directors as d on fd.director_id = d.director_id ");
-            stringBuilder.append("where LOWER(d.name) like :query or LOWER(f.name) like :query ");
+            stringBuilder.append("LEFT JOIN film_director AS fd ON f.film_id = fd.film_id ");
+            stringBuilder.append("LEFT JOIN directors AS d ON fd.director_id = d.director_id ");
+            stringBuilder.append("WHERE LOWER(d.name) like :query OR LOWER(f.name) like :query ");
         } else if (by.contains("director")) {
-            stringBuilder.append("left join film_director as fd on f.film_id = fd.film_id ");
-            stringBuilder.append("left join directors as d on fd.director_id = d.director_id ");
-            stringBuilder.append("where LOWER(d.name) like :query ");
+            stringBuilder.append("LEFT JOIN film_director AS fd ON f.film_id = fd.film_id ");
+            stringBuilder.append("LEFT JOIN directors AS d ON fd.director_id = d.director_id ");
+            stringBuilder.append("WHERE LOWER(d.name) LIKE :query ");
         } else if (by.contains("title")) {
-            stringBuilder.append("where LOWER(f.name) like :query ");
+            stringBuilder.append("WHERE LOWER(f.name) LIKE :query ");
         }
-        stringBuilder.append("group by f.film_id ");
-        stringBuilder.append("order by count(l.user_id) desc");
+        stringBuilder.append("GROUP BY f.film_id ");
+        stringBuilder.append("ORDER BY COUNT(l.user_id) DESC");
 
         String sql = String.valueOf(stringBuilder);
         SqlRowSet rowSet = namedParameterJdbcTemplate.queryForRowSet(sql, namedParameters);

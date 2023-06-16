@@ -31,29 +31,28 @@ public class DbDirectorStorage implements DirectorStorage {
 
     @Override
     public List<Director> getAllDirectors() {
-        String sqlQuery = "select director_id, name as director_name from directors";
+        String sqlQuery = "SELECT director_id, name AS director_name FROM directors";
         return jdbcTemplate.query(sqlQuery, DbDirectorStorage::makeDirector);
     }
 
     @Override
     public Director getDirectorById(Integer id) {
-        String sqlQuery = "select director_id, name as director_name from directors where director_id = ?";
+        String sqlQuery = "SELECT director_id, name AS director_name FROM directors WHERE director_id = ?";
         return jdbcTemplate.queryForObject(sqlQuery, DbDirectorStorage::makeDirector, id);
     }
 
     @Override
     public Director createDirector(Director director) {
         if (!checkDirector(director.getName())) {
-            String sqlQuery = "insert into directors (name) " +
-                    "values (?)";
-
+            String sqlQuery = "INSERT INTO directors (name) VALUES (?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
+
             PreparedStatementCreator connection = con -> {
                 PreparedStatement stmt = con.prepareStatement(sqlQuery, new String[]{"director_id"});
                 stmt.setString(1, director.getName());
                 return stmt;
-
             };
+
             jdbcTemplate.update(connection, keyHolder);
             director.setId(keyHolder.getKey().intValue());
             return director;
@@ -65,7 +64,7 @@ public class DbDirectorStorage implements DirectorStorage {
     @Override
     public Director updateDirector(Director director) {
         if (checkDirector(director.getId())) {
-            String sqlQuery = "update directors set name=? where director_id = ?";
+            String sqlQuery = "UPDATE directors SET name=? WHERE director_id = ?";
             jdbcTemplate.update(sqlQuery, director.getName(), director.getId());
             return director;
         } else {
@@ -76,7 +75,7 @@ public class DbDirectorStorage implements DirectorStorage {
     @Override
     public void deleteDirectorById(Integer id) {
         if (checkDirector(id)) {
-            String sqlQuery = "delete from directors where director_id = ?";
+            String sqlQuery = "DELETE FROM directors WHERE director_id = ?";
             jdbcTemplate.update(sqlQuery, id);
         } else {
             throw new FindDirectorException("Director with id " + id + " not found");
@@ -86,25 +85,25 @@ public class DbDirectorStorage implements DirectorStorage {
     @Override
     public List<Film> getFilmsOfDirectorById(Integer id) {
         if (checkDirector(id)) {
-            String sqlQuery = ("select f.film_id as film_id, " +
-                    "f.name as film_name, " +
-                    "f.release_date as release_date, " +
-                    "f.description as description, " +
-                    "f.duration as duration, " +
-                    "f.mpa_rating_id as mpa_rating_id, " +
-                    "m.name as mpa_name, " +
-                    "g.genre_id as genre_id, " +
-                    "g.name as genre_name, " +
-                    "d.director_id as director_id, " +
-                    "d.name as director_name " +
-                    "from films as f " +
-                    "left join film_genre as fg on f.film_id = fg.film_id " +
-                    "left join genres as g on fg.genre_id = g.genre_id " +
-                    "left join mpa_ratings as m on f.mpa_rating_id = m.mpa_rating_id " +
-                    "left join film_director as fd on fd.film_id = f.film_id " +
-                    "left join directors as d on fd.director_id = d.director_id " +
-                    "where d.director_id = ? " +
-                    "group by film_id");
+            String sqlQuery = ("SELECT f.film_id AS film_id, " +
+                    "f.name AS film_name, " +
+                    "f.release_date AS release_date, " +
+                    "f.description AS description, " +
+                    "f.duration AS duration, " +
+                    "f.mpa_rating_id AS mpa_rating_id, " +
+                    "m.name AS mpa_name, " +
+                    "g.genre_id AS genre_id, " +
+                    "g.name AS genre_name, " +
+                    "d.director_id AS director_id, " +
+                    "d.name AS director_name " +
+                    "FROM films AS f " +
+                    "LEFT JOIN film_genre AS fg ON f.film_id = fg.film_id " +
+                    "LEFT JOIN genres AS g ON fg.genre_id = g.genre_id " +
+                    "LEFT JOIN mpa_ratings AS m ON f.mpa_rating_id = m.mpa_rating_id " +
+                    "LEFT JOIN film_director AS fd ON fd.film_id = f.film_id " +
+                    "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
+                    "WHERE d.director_id = ? " +
+                    "GROUP BY film_id");
             return makeFilmList(jdbcTemplate.queryForRowSet(sqlQuery, id));
         } else {
             throw new FindDirectorException("Director with id " + id + " not found");
@@ -112,12 +111,12 @@ public class DbDirectorStorage implements DirectorStorage {
     }
 
     private boolean checkDirector(String name) {
-        return jdbcTemplate.queryForObject("select count(*) from directors where name=?",
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM directors WHERE name=?",
                 Integer.class, name) == 1;
     }
 
     private boolean checkDirector(Integer id) {
-        return jdbcTemplate.queryForObject("select count(*) from directors where director_id=?",
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM directors WHERE director_id=?",
                 Integer.class, id) == 1;
     }
 

@@ -47,7 +47,7 @@ public class DirectorController {
 
     @DeleteMapping("/{id}")
     public void deleteDirectorById(@PathVariable Integer id) {
-        log.debug("Received id = {} for delete director", id);
+        log.debug("Received id = {} for DELETE director", id);
         directorService.deleteDirectorById(id);
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.exception.NotFoundInDB;
+import ru.yandex.practicum.filmorate.exception.NotFoundInDbException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,28 +25,28 @@ public class DbGenreStorage implements GenreStorage {
 
     @Override
     public void saveGenre(Genre genre) {
-        String sql = "insert into genres(genre_id, name) values(?,?)";
+        String sql = "INSERT INTO genres(genre_id, name) VALUES(?,?)";
         jdbcTemplate.update(sql, genre.getId(), genre.getName());
     }
 
     @Override
     public Optional<Genre> getGenre(int genreId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject("select * from genres where genre_id=?",
+            return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT * FROM genres WHERE genre_id=?",
                     (rs, rowNum) -> makeGenre(rs), genreId));
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundInDB("Жанр не найден");
+            throw new NotFoundInDbException("Жанр не найден");
         }
     }
 
     @Override
     public List<Genre> getAllGenres() {
-        String sql = "select * from genres";
+        String sql = "SELECT * FROM genres";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
-        Integer id = rs.getInt("genre_id");
+        int id = rs.getInt("genre_id");
         String name = rs.getString("name");
         return new Genre(id, name);
     }

@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.NotFoundInDB;
+import ru.yandex.practicum.filmorate.exception.NotFoundInDbException;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.sql.ResultSet;
@@ -51,7 +51,7 @@ public class DbReviewStorage implements ReviewStorage {
                 review.isPositive(),
                 review.getId());
         if (result == 0) {
-            throw new NotFoundInDB("Объекты для обновления не найдены");
+            throw new NotFoundInDbException("Объекты для обновления не найдены");
         }
         return getById(review.getId());
     }
@@ -63,7 +63,7 @@ public class DbReviewStorage implements ReviewStorage {
         Review review = getById(id);
         int result = jdbcTemplate.update(sql, id);
         if (result == 0) {
-            throw new NotFoundInDB("Объекты для удаления не найдены");
+            throw new NotFoundInDbException("Объекты для удаления не найдены");
         }
     }
 
@@ -75,14 +75,14 @@ public class DbReviewStorage implements ReviewStorage {
                 "r.user_id AS user_id, " +
                 "r.film_id AS film_id," +
                 "SUM(like_or_dislike) AS useful " +
-                "FROM reviews r LEFT JOIN reviews_likes l on " +
-                "r.review_id=l.review_id " +
+                "FROM reviews r " +
+                "LEFT JOIN reviews_likes l ON r.review_id=l.review_id " +
                 "WHERE r.review_id = ? " +
                 "GROUP BY r.review_id, r.content, r.is_positive, r.user_id, r.film_id";
         try {
             return jdbcTemplate.queryForObject(sqlQuery, this::mapReview, id);
         } catch (DataAccessException e) {
-            throw new NotFoundInDB("Нет отзыва с таким id");
+            throw new NotFoundInDbException("Нет отзыва с таким id");
         }
     }
 
@@ -111,8 +111,8 @@ public class DbReviewStorage implements ReviewStorage {
                     "WHEN like_or_dislike is null THEN 0 " +
                     "ELSE SUM(like_or_dislike) " +
                     "END AS useful " +
-                    "FROM reviews r LEFT JOIN reviews_likes l on " +
-                    "r.review_id=l.review_id " +
+                    "FROM reviews r " +
+                    "LEFT JOIN reviews_likes l ON r.review_id=l.review_id " +
                     "GROUP BY r.review_id, r.content, r.is_positive, r.user_id, r.film_id " +
                     "ORDER BY useful DESC " +
                     "LIMIT ?";
@@ -127,8 +127,8 @@ public class DbReviewStorage implements ReviewStorage {
                     "WHEN like_or_dislike is null THEN 0 " +
                     "ELSE SUM(like_or_dislike) " +
                     "END AS useful " +
-                    "FROM reviews r LEFT JOIN reviews_likes l on " +
-                    "r.review_id=l.review_id " +
+                    "FROM reviews r " +
+                    "LEFT JOIN reviews_likes l ON r.review_id=l.review_id " +
                     "WHERE r.film_id = ?" +
                     "GROUP BY r.review_id, r.content, r.is_positive, r.user_id, r.film_id " +
                     "ORDER BY useful DESC " +
@@ -143,7 +143,7 @@ public class DbReviewStorage implements ReviewStorage {
     public void containsReview(int id) {
         Integer rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reviews WHERE review_id=?", Integer.class, id);
         if (rowCount == null) {
-            throw new NotFoundInDB("Отзыва с id=" + id + " не существует");
+            throw new NotFoundInDbException("Отзыва с id=" + id + " не существует");
         }
     }
 }

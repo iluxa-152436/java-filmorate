@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.ApiErrorMessage;
-import ru.yandex.practicum.filmorate.exception.NotFoundInDB;
+import ru.yandex.practicum.filmorate.exception.NotFoundInDbException;
 
 import javax.validation.ConstraintViolationException;
 
@@ -22,7 +22,7 @@ public class ExceptionHandlerController {
             FindMpaRatingException.class,
             FindGenreException.class,
             FindDirectorException.class,
-            NotFoundInDB.class})
+            NotFoundInDbException.class})
     public ResponseEntity<ApiErrorMessage> handleNotFoundException(Exception exception) {
         log.debug("Получен статус 404 Not found {}", exception.getMessage(), exception);
         return ResponseEntity

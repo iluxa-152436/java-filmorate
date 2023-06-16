@@ -56,13 +56,12 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void deleteUserById(int userId) {
-
+        throw new UnsupportedOperationException("Не поддерживается в InMemory");
     }
-
 
     @Override
     public List<Film> getRecommendations(Integer id) {
-        return List.of();
+        throw new UnsupportedOperationException("Не поддерживается в InMemory");
     }
 
     @Override
