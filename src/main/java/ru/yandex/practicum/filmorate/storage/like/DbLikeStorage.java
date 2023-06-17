@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.Like;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Qualifier("DB")
@@ -26,41 +27,48 @@ public class DbLikeStorage implements LikeStorage {
     }
 
     @Override
-    public List<Integer> getSortedFilmLikes(long limit, int genreId, String releaseDate) {
-        String sql = "SELECT f.film_id, COUNT(l.user_id) FROM films AS f " +
-                "LEFT JOIN likes AS l ON f.film_id=l.film_id " +
-                "LEFT JOIN film_genre AS fg ON f.film_id=fg.film_id " +
-                "WHERE fg.genre_id = ? AND EXTRACT(YEAR FROM f.release_date) = ? " +
-                "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC " +
-                "LIMIT ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, genreId, releaseDate, limit);
-        return makeFilmLikesList(rowSet);
+    public List<Integer> getSortedFilmLikes(long limit, Optional<Integer> genreId, Optional<String> releaseDate) {
+        StringBuilder stringBuilder = new StringBuilder("SELECT f.film_id, COUNT(l.user_id) FROM films AS f ");
+        stringBuilder.append("LEFT JOIN likes AS l ON f.film_id=l.film_id ");
+        stringBuilder.append("LEFT JOIN film_genre AS fg ON f.film_id=fg.film_id ");
+        switch (checkFilterOptions(genreId, releaseDate)) {
+            case GENRE:
+                stringBuilder.append("WHERE fg.genre_id = ? ");
+                break;
+            case RELEASE_DATE:
+                stringBuilder.append("WHERE EXTRACT(YEAR FROM f.release_date) = ? ");
+                break;
+            case GENRE_AND_RELEASE_DATE:
+                stringBuilder.append("WHERE fg.genre_id = ? AND EXTRACT(YEAR FROM f.release_date) = ? ");
+                break;
+            case EMPTY_FILTER:
+        }
+        stringBuilder.append("GROUP BY f.film_id ORDER BY COUNT(l.user_id) DESC LIMIT ?");
+        String sql = stringBuilder.toString();
+        switch (checkFilterOptions(genreId, releaseDate)) {
+            case GENRE:
+                return makeFilmLikesList(jdbcTemplate.queryForRowSet(sql, genreId.get(), limit));
+            case RELEASE_DATE:
+                return makeFilmLikesList(jdbcTemplate.queryForRowSet(sql, releaseDate.get(), limit));
+            case GENRE_AND_RELEASE_DATE:
+                return makeFilmLikesList(jdbcTemplate.queryForRowSet(sql, genreId.get(), releaseDate.get(), limit));
+            case EMPTY_FILTER:
+                return makeFilmLikesList(jdbcTemplate.queryForRowSet(sql, limit));
+            default:
+                throw new UnsupportedOperationException("Параметр фильтрации не поддерживается");
+        }
     }
 
-    @Override
-    public List<Integer> getSortedFilmLikes(long limit, String releaseDate) {
-        String sql = "SELECT f.film_id, COUNT(l.user_id) FROM films AS f " +
-                "LEFT JOIN likes AS l ON f.film_id=l.film_id " +
-                "WHERE EXTRACT(YEAR FROM f.release_date) = ? " +
-                "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC " +
-                "LIMIT ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, releaseDate, limit);
-        return makeFilmLikesList(rowSet);
-    }
-
-    @Override
-    public List<Integer> getSortedFilmLikes(long limit, int genreId) {
-        String sql = "SELECT f.film_id, COUNT(l.user_id) FROM films AS f " +
-                "LEFT JOIN likes AS l ON f.film_id=l.film_id " +
-                "LEFT JOIN film_genre AS fg ON f.film_id=fg.film_id " +
-                "WHERE fg.genre_id = ? " +
-                "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC " +
-                "LIMIT ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, genreId, limit);
-        return makeFilmLikesList(rowSet);
+    private FilterOptions checkFilterOptions(Optional<Integer> genreId, Optional<String> releaseDate) {
+        if (genreId.isEmpty() && releaseDate.isEmpty()) {
+            return FilterOptions.EMPTY_FILTER;
+        } else if (genreId.isPresent() && releaseDate.isPresent()) {
+            return FilterOptions.GENRE_AND_RELEASE_DATE;
+        } else if (genreId.isEmpty()) {
+            return FilterOptions.RELEASE_DATE;
+        } else {
+            return FilterOptions.GENRE;
+        }
     }
 
     @Override
@@ -73,17 +81,6 @@ public class DbLikeStorage implements LikeStorage {
     public void deleteLike(Like like) {
         String sql = "DELETE FROM likes WHERE user_id=? AND film_id=?";
         jdbcTemplate.update(sql, like.getUserId(), like.getFilmId());
-    }
-
-    @Override
-    public List<Integer> getSortedFilmLikes(long limit) {
-        String sql = "SELECT f.film_id, COUNT(l.user_id) FROM films AS f " +
-                "LEFT JOIN likes AS l ON f.film_id=l.film_id " +
-                "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC " +
-                "LIMIT ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, limit);
-        return makeFilmLikesList(rowSet);
     }
 
     @Override
@@ -120,5 +117,12 @@ public class DbLikeStorage implements LikeStorage {
             filmLikesList.add(filmId);
         }
         return filmLikesList;
+    }
+
+    private enum FilterOptions {
+        GENRE_AND_RELEASE_DATE,
+        RELEASE_DATE,
+        GENRE,
+        EMPTY_FILTER
     }
 }
