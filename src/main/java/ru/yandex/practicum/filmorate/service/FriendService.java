@@ -18,16 +18,20 @@ public class FriendService {
     private final UserService userService;
     private final FriendStorage friendStorage;
 
+    private final FeedService feedService;
+
     @Autowired
-    public FriendService(UserService userService, @Qualifier("DB") FriendStorage friendStorage) {
+    public FriendService(UserService userService, @Qualifier("DB") FriendStorage friendStorage, FeedService feedService) {
         this.userService = userService;
         this.friendStorage = friendStorage;
+        this.feedService = feedService;
     }
 
     public void addFriend(int userId, int friendId) {
         userService.checkId(userId);
         userService.checkId(friendId);
         friendStorage.addFriend(userId, friendId);
+        feedService.addFeed(userId, friendId, FeedEventType.FRIEND, FeedOperation.ADD);
     }
 
     public void deleteFriend(int userId, int friendId) {
@@ -35,6 +39,7 @@ public class FriendService {
         userService.checkId(friendId);
         friendStorage.deleteFriend(userId, friendId);
         friendStorage.deleteFriend(friendId, userId);
+        feedService.addFeed(userId, friendId, FeedEventType.FRIEND, FeedOperation.REMOVE);
     }
 
     public Collection<User> getFriends(int userId) {

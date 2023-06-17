@@ -3,9 +3,12 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
@@ -49,6 +52,16 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public int getNexId() {
         return ++id;
+    }
+
+    @Override
+    public void deleteUserById(int userId) {
+        throw new UnsupportedOperationException("Не поддерживается в InMemory");
+    }
+
+    @Override
+    public List<Film> getRecommendations(Integer id) {
+        throw new UnsupportedOperationException("Не поддерживается в InMemory");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -11,7 +12,8 @@ import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -33,14 +35,14 @@ class DbFriendStorageTest {
     @Sql("classpath:test_data.sql")
     void addFriend() {
         friendStorage.addFriend(1, 2);
-        assertEquals(2, jdbcTemplate.queryForObject("select count(*) from friends", Integer.class));
+        assertEquals(2, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM friends", Integer.class));
     }
 
     @Test
     @Sql("classpath:test_data.sql")
     void deleteFriend() {
         friendStorage.deleteFriend(2, 1);
-        assertEquals(0, jdbcTemplate.queryForObject("select count(*) from friends", Integer.class));
+        assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM friends", Integer.class));
     }
 
     @Test

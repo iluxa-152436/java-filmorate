@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Like;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 @Qualifier("InMemory")
@@ -33,14 +32,13 @@ public class InMemoryLikeStorage implements LikeStorage {
     }
 
     @Override
-    public Map<Integer, Integer> getSortedFilmLikes(long limit) {
-        return filmLikes.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue())
-                .limit(limit)
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue,
-                        LinkedHashMap::new));
+    public List<Integer> getSortedFilmLikes(long limit, Optional<Integer> genreId, Optional<String> releaseDate) {
+        throw new UnsupportedOperationException("Не поддерживается в InMemory");
+    }
+
+    @Override
+    public List<Integer> getSortedByLikesFilteredByFilmIds(String query, List<String> by) {
+        return null;
     }
 
     public void addFilmToLikeList(Integer filmId) {
