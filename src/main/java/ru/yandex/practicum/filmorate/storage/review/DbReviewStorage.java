@@ -35,7 +35,7 @@ public class DbReviewStorage implements ReviewStorage {
                 .usingGeneratedKeyColumns("review_id");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("content", review.getContent())
-                .addValue("is_positive", review.isPositive())
+                .addValue("is_positive", review.getIsPositive())
                 .addValue("film_id", review.getFilmId())
                 .addValue("user_id", review.getUserId());
         int id = simpleJdbcInsert.executeAndReturnKey(params).intValue();
@@ -48,7 +48,7 @@ public class DbReviewStorage implements ReviewStorage {
                 "WHERE review_id=?";
         int result = jdbcTemplate.update(sql,
                 review.getContent(),
-                review.isPositive(),
+                review.getIsPositive(),
                 review.getId());
         if (result == 0) {
             throw new NotFoundInDbException("Объекты для обновления не найдены");
@@ -60,7 +60,6 @@ public class DbReviewStorage implements ReviewStorage {
     public void delete(int id) {
         String sql = "DELETE FROM reviews " +
                 "WHERE review_id=?";
-        Review review = getById(id);
         int result = jdbcTemplate.update(sql, id);
         if (result == 0) {
             throw new NotFoundInDbException("Объекты для удаления не найдены");
@@ -100,7 +99,7 @@ public class DbReviewStorage implements ReviewStorage {
     @Override
     public List<Review> getList(Integer filmId, int amount) {
         String sql;
-        List<Review> reviews = new ArrayList<>();
+        List<Review> reviews;
         if (filmId == null) {
             sql = "SELECT r.review_id AS id, " +
                     "r.content AS content, " +

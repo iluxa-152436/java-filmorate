@@ -23,8 +23,4 @@ public class Review {
     @NotNull
     private Integer filmId;
     private int useful;
-
-    public Object isPositive() {
-        return isPositive;
-    }
 }
